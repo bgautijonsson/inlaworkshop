@@ -1,0 +1,863 @@
+---
+title: "Large-Scale Approximate Bayesian Inference for Spatially Distributed Extreme Rainfall"
+subtitle: "Max-and-Smooth and Spatial Copulas"
+author:
+  - name: Brynjólfur Gauti Guðrúnar Jónsson
+institute: "University of Iceland"
+format: 
+  revealjs:
+    theme: theme.scss
+    simplemenu:
+      flat: false
+      barhtml:
+        header: "<div class='menubar mb-10'><ul class='menu'></ul><div>"
+        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/exeter2025' target='_blank'>bggj.is/exeter2025</a></div>"
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+revealjs-plugins:
+  - simplemenu
+bibliography: references.bib
+csl: cambridge-university-press-numeric.csl
+image: images/copula/max_smooth_station_scatterplot.png
+---
+
+```{r}
+library(stdmatern)
+library(INLA)
+library(tidyverse)
+library(gt)
+library(evd)
+```
+
+## Extreme Precipitation {data-name="Background"}
+
+::: {.columns}
+::: {.column width="40%"}
+![Reykjavík, 2016 [@mblreykjavik]](images/flod1.jpg){width="100%" fig-align="left" style="font-size:40%"}
+
+![Siglufjörður, 2024 [@ruvsiglufjordur]](images/flod2.webp){width="100%" fig-align="left" style="font-size:40%"}
+:::
+
+::: {.column width="60%" style="font-size: 60%"}
+- **Climate Change Impact**
+  - Increasing frequency of extreme events
+  - Higher intensity precipitation
+  - Sub-daily timescale impacts
+
+- **Modeling Challenges**
+  - Complex spatial dependencies
+  - High-resolution requirements
+  - Non-stationary patterns
+
+- **Research Goals**
+  - Efficient statistical methods
+  - Improved uncertainty quantification
+  - Scalable computational approach
+:::
+:::
+
+## Large Datasets
+
+::: {.columns style="font-size:70%"}
+::: {.column width="70%"}
+-   UKCP Local Projections on a 5km grid over the UK (1980-2080) [@metoffi]
+-   Challenge: Modeling maximum daily precipitation in yearly blocks
+    -   43,920 spatial locations on a 180 x 244 grid
+    -   Location-specific GEVt distributions
+    -   Four parameters per location as in [@johannesson2021]
+        -   Location, Trend, Scale, Shape
+-   Two aspects of spatial dependence:
+    1.  Parameter-level *(Latent Gaussian Models)*
+    2.  Data-level *(Copulas)*
+:::
+
+::: {.column width="30%"}
+![](images/ukcp_data.png){width="100%"}
+:::
+:::
+
+## Latent Gaussian Models (LGMs) {data-name="LGMs"}
+
+::: {style="font-size:80%"}
+- **Three-level hierarchy**  
+  1) *Data:* $y\mid \eta,\theta\sim\pi(y\mid\eta,\theta)$  
+  2) *Latent field:* $\eta\mid\theta\sim\mathcal N\bigl(\mu(\theta),\Sigma(\theta)\bigr)$
+  3) *Hyper-parameters:* $\theta\sim\pi(\theta)$
+- **Structured additive predictor**  
+  $$
+  \eta_i=\beta_0+\textstyle\sum_k \beta_k z_{i,k}+\sum_j u_j a_{i,j}+\varepsilon_i
+  $$
+- **Why LGMs?** Massive dimensionality, yet fast inference via sparsity and conjugacy.
+:::
+
+## LGMs: A Concrete Example
+
+::: {style="font-size:80%"}
+- **GEV model for precipitation extremes**  
+  1) *Data:* $y_i \mid \mu_i, \sigma, \xi \sim \text{GEV}(\mu_i, \sigma, \xi)$  
+  2) *Latent field:* $\eta = (\log \mu_1, \ldots, \log \mu_n)^\top \sim \mathcal{N}(\boldsymbol{\mu}(\theta), \mathbf{Q}^{-1}(\theta))$
+  3) *Hyper-parameters:* $\theta =$ e.g. mean, range, variance, spatial correlation
+- **Structured additive predictor for location parameter**  
+  $$
+  \log(\mu_i) = \beta_0 + \beta_1 \text{elevation}_i + \beta_2 \text{trend}_i \cdot \text{year} + u_{\text{region}[i]} + \varepsilon_i
+  $$
+- **Why this matters:** Location-specific location parameter with spatial dependence, while maintaining computational tractability for 43,920 locations.
+:::
+
+## Extended LGMs — multivariate link functions
+
+::: {style="font-size:80%"}
+- Need to model several distributional parameters jointly (e.g., location, scale and shape in GEV).  
+- Define **vector link** $g:\mathcal D\to\mathbb R^M$  
+  $$g(\psi_i) = (\eta_{1,i},\dots,\eta_{M,i})^\top$$ 
+- Each component uses its own fixed/random-effect design:  
+  $$\eta_{m} = X_m\beta_m + A_m u_m + \varepsilon_m,\quad m=1,\dots,M$$
+- Greatly increases flexibility for spatio-temporal extremes and joint risk metrics.
+:::
+
+## Extended LGMs - GEV Example
+
+::: {style="font-size:80%"}
+- **Joint GEV model for precipitation extremes**  
+  1) *Data:* $y_i \mid \mu_i, \sigma_i, \xi_i \sim \text{GEV}(\mu_i, \sigma_i, \xi_i)$  
+  2) *Latent field:* $\boldsymbol\eta_i = \begin{pmatrix} (\psi_1, \tau_1, \phi_1)^\intercal \\  \vdots \\ (\psi_n, \tau_n, \phi_n)^\intercal \end{pmatrix}  \sim \mathcal{N}(\boldsymbol{\mu}(\theta), \mathbf{Q}^{-1}(\theta))$ 
+
+  $\qquad(\psi_i, \tau_i, \phi_i) = (\log \mu_i, \log \sigma_i - \log \mu_i, f(\xi_i))$
+  3) *Hyper-parameters:* $\theta =$ e.g. mean, range, variance, spatial correlation
+:::
+
+## Max-and-Smooth — big picture {data-name="Max-and-Smooth"}
+
+::: {style="font-size:80%"}
+- **Goal:** accurate but *fast* Bayesian inference for (extended) LGMs with many replicates.  
+- **Two stages** 
+  1. **Max:** approximate each location-specific likelihood by a Gaussian.  
+  2. **Smooth:** fuse those Gaussian pseudo-observations with the latent GMRF prior.
+- Good when each group/location has many replicates (MLE asymptotically Gaussian)
+:::
+
+## Max step — Gaussian likelihood surrogate
+
+::: {style="font-size:80%"}
+- Loop over locations: estimate GEV parameters and observed information (Hessian) at each site
+- For each location $i$:
+    - Find MLE $\hat\eta_i$ and observed information $I_{\eta_i y_i}$.  
+$$
+\hat L(\eta_i\mid y_i)=\mathcal N\!\bigl(\eta_i\mid\hat\eta_i,\;I_{\eta_i y_i}^{-1}\bigr)
+$$
+- Gather all MLEs into vector $\hat \eta$ arrange Hessians into $Q_{\eta y}$
+::: 
+
+
+
+## Smooth step — Gaussian–Gaussian posterior
+
+
+::: {style="font-size:80%"}
+Hierarchical pseudo-model
+$$
+\begin{aligned}
+\hat\eta &\mid \eta \;\sim\; \mathcal N\bigl(\eta, Q_{\eta y}^{-1}\bigr) \\
+\eta     &\mid \nu \;\sim\; \mathcal N\bigl(Z\nu, Q_\varepsilon^{-1}\bigr) \\
+\nu      &\mid \theta \;\sim\; \mathcal N\bigl(\mu_\nu, Q_\nu^{-1}\bigr).
+\end{aligned}
+$$
+
+- Data-level likelihood uses MLEs and estimated Hessians
+- Latent level applies spatial smoothing
+:::
+
+
+## Max-and-Smooth
+
+::: {.columns style="font-size:60%"}
+### Two-Step Approach
+::: {.column width="50%"}
+
+1. **Max Step**: Maximum Likelihood
+   - Independent local estimates $\hat{\eta}_i$
+   - Asymptotic normality:
+$$
+\hat{\eta}_i \stackrel{a}{\sim} N(\eta_i, \mathbf{Q}_{\eta y,i}^{-1})
+$$
+   - Observed information matrix $\mathbf{Q}_{\eta y,i} = -\nabla^2\ell_i(\hat{\eta}_i)$
+
+:::
+::: {.column width="50%"}
+
+2. **Smooth Step**: Spatial Model
+   - Gaussian approximation:
+$$
+\hat{\eta} \mid \eta \sim N(\eta, \mathbf{Q}_{\eta y}^{-1})
+$$
+   - Latent field prior:
+$$
+\eta \mid \theta \sim N(\boldsymbol \mu(\theta), \mathbf{Q}_\eta(\theta)^{-1})
+$$
+   - Hyperprior: $p(\theta)$
+:::
+:::
+
+::: {style="font-size:65%; margin-top:20px;"}
+**Posterior**: The joint posterior distribution becomes:
+
+$$
+p(\eta, \theta \mid \hat{\eta}) \propto p(\hat{\eta} \mid \eta)p(\eta \mid \theta)p(\theta)
+$$
+
+where $\eta$ is the latent field, $\theta$ are hyperparameters, and $\hat{\eta}$ are the local MLEs.
+:::
+
+## Computational Implementation
+
+::: {style="font-size:65%"}
+### Efficient Two-Stage Implementation
+
+::: {.columns}
+::: {.column width="50%"}
+**Max Step (TMB)**
+
+- Template Model Builder [@kristensen2016] for maximum likelihood
+- Automatic differentiation
+- Parallel processing of station-wise estimates
+- Efficient sparse Hessians
+:::
+
+::: {.column width="50%"}
+**Smooth Step (Stan)**
+
+- Full Bayesian posterior via HMC [@carpenter2017]
+- BYM2 spatial prior implementation
+- Scales well to large number of parameters
+- Use `csr_times_vector()` for data-level likelihood
+:::
+:::
+1. Get MLEs and Hessians from TMB
+2. Pass $\hat \eta$ and CSR version of $L_{\eta y}$ into Stan
+3. Stan gives full posterior of Gaussian-Gaussian model
+:::
+
+## Max vs. Smooth
+
+![](images/iid/max_smooth_compare.png){fig-align="center"}
+
+## 
+
+::: {.columns}
+::: {.column width="33%"}
+![](images/iid/psi.png){width=100%}
+:::
+::: {.column width="33%"}
+![](images/iid/tau.png){width=100%}
+:::
+::: {.column width="33%"}
+![](images/iid/phi.png){width=100%}
+:::
+:::
+
+
+## 
+
+::: {.columns}
+::: {.column width="33%"}
+![](images/iid/mu.png){width=100%}
+:::
+::: {.column width="33%"}
+![](images/iid/sigma.png){width=100%}
+:::
+::: {.column width="33%"}
+![](images/iid/xi.png){width=100%}
+:::
+:::
+
+
+## From Data-level Independence to Dependence
+
+::: {.columns style="font-size:60%"}
+::: {.column width="50%"}
+### Parameter-level Dependence
+
+-   Assumes conditional independence
+-   Biased joint probability estimates
+-   Underestimates parameter variance
+:::
+
+::: {.column width="50%"}
+### Copula
+
+-   Improves joint probabilities
+-   Enhances spatial risk assessment
+-   Better variance estimates
+:::
+:::
+
+::: {style="font-size:65%; margin-top:20px;"}
+**Sklar's Theorem**: For any multivariate distribution $H$, there exists a unique copula $C$ such that:
+
+$$
+H(\mathbf x) = C(F_1(x_1), \dots, F_d(x_d))
+$$
+
+where $F_i$ are marginal distributions. We can also write this as a density
+
+$$
+h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
+$$
+
+:::
+
+## Matérn-like Gaussian Copula {data-name="Copulas"}
+
+::: {style="font-size:55%"}
+
+$$
+\begin{gathered}
+\log h(\mathbf x) = \log c\left(F_1(x_1), \dots, F_d(x_d)\right) + \sum_{i=1}^d \log f_i(x_i)
+\end{gathered}
+$$
+
+------------------------------------------------------------------------
+
+::: columns
+
+::: {.column width="50%"}
+### Marginal CDFs
+
+-   $F_i(x_i)$ is $\mathrm{GEV}(\mu_i, \sigma_i, \xi_i)$
+-   Can model parameter dependence with BYM2
+:::
+
+::: {.column width="50%"}
+$$
+\begin{aligned}
+\log h(\mathbf x) &= \log c(u_1, \dots, u_d) \\
+&+ \sum_{i=1}^d \log f_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i) \\
+u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
+\end{aligned}
+$$
+:::
+:::
+
+------------------------------------------------------------------------
+
+::: columns
+### Gaussian Copula
+
+::: {.column width="50%"}
+-   Matérn-like precision matrix $\mathbf{Q}$ [@lindgren2011]
+-   If $\mathbf{Q} = \mathbf{I}$ simplifies to independent margins
+-   Scaled so $\boldsymbol{\Sigma} = \mathbf{Q}^{-1}$ is correlation matrix
+-   Need to calculate marginal variances [@rue2005a; @rue2007; @rue2009]
+-   How to generate, scale and compute with $\mathbf{Q}$ quickly (for MCMC)?
+:::
+
+::: {.column width="50%"}
+$$
+\begin{aligned}
+\log c(\mathbf u) &\propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z} + \mathbf{z}^T\mathbf{z}\right) \\
+\mathbf{z} &= \Phi^{-1}(\mathbf u)
+\end{aligned}
+$$
+:::
+:::
+:::
+
+## The Precision Matrix
+
+::: {style="font-size:60%"}
+$\mathbf Q$ defined as Kronecker sum of two AR(1) precision matrices, similar to [@lindgren2011]
+
+$$
+\mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
+$$
+
+::: {.columns style="font-size:80%"}
+::: {.column width="50%"}
+$$
+\mathbf{Q}_{\rho_{1}} = \frac{1}{1-\rho_{1}^2}
+\begin{bmatrix}
+1 & -\rho_{1} & 0 & \cdots & 0 \\
+-\rho_{1} & 1+\rho_{1}^2 & -\rho_{1} & \cdots & 0 \\
+0 & -\rho_{1} & 1+\rho_{1}^2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
+$$
+:::
+
+::: {.column width="50%"}
+$$
+\mathbf{Q}_{\rho_{2}} = \frac{1}{1-\rho_{2}^2}
+\begin{bmatrix}
+1 & -\rho_{2} & 0 & \cdots & 0 \\
+-\rho_{2} & 1+\rho_{2}^2 & -\rho_{2} & \cdots & 0 \\
+0 & -\rho_{2} & 1+\rho_{2}^2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
+$$
+:::
+
+$$
+\mathbf Q = \begin{bmatrix}
+\frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & \frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} & \dots & \cdots & \dots \\
+\frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} & \frac{(1+\rho_1^2)}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \cdots & \vdots  \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+\dots & \dots & \cdots & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
+\end{bmatrix}^{\nu + 1}
+$$
+:::
+:::
+
+## Connection to SPDE approach [@lindgren2011]
+
+::: {.columns style="font-size:60%"}
+::: {.column width="50%"}
+- **Continuous SPDE**  
+  A Matérn field $x(\mathbf{s})$ in continuous space is a solution to  
+  $$
+  (\kappa^2 - \Delta)^{\alpha/2}\,x(\mathbf{s}) \;=\; \mathcal{W}(\mathbf{s}),
+  $$
+  where $\Delta = \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2}$ is the Laplacian operator, and $\alpha$ controls smoothness.
+
+  
+:::
+::: {.column width="50%"}
+- **Discretizing on a Regular Grid**  
+  - In 2D, $\Delta$ on a $n_1 \times n_2$ grid becomes a **Kronecker sum** of 1D difference operators:
+    $$
+      \Delta_
+      \;\approx\; 
+      \mathbf{L}_{1D}^{(x)} \otimes \mathbf{I}_{n_2} \;+\; \mathbf{I}_{n_1} \otimes \mathbf{L}_{1D}^{(y)}.
+    $$
+  - $\mathbf{L_{1D}}$ is a second difference matrix
+  $$
+    \mathbf{L}_{1D} = 
+    \begin{bmatrix}
+    -2 & 1 & 0 & \cdots & 0 \\
+    1 & -2 & 1 & \cdots & 0 \\
+    0 & 1 & -2 & \cdots & 0 \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & 0 & \cdots & -2
+    \end{bmatrix}
+  $$ 
+:::
+
+:::
+
+
+## Eigendecomposition
+
+::: {.columns style="font-size:65%"}
+Because of how $\mathbf{Q}$ is defined [@horn1991], we know that
+
+$$
+\begin{aligned}
+\mathbf{Q} &= \mathbf{V}\boldsymbol{\Lambda}^{\nu + 1}\mathbf{V} \\
+&= (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
+\end{aligned}
+$$
+
+where
+
+$$
+\begin{aligned}
+\mathbf{Q}_{\rho_1} = \mathbf{V_{\rho_1}}\boldsymbol \Lambda_{\rho_1}\mathbf{V_{\rho_1}}^T \qquad \& \qquad
+\mathbf{Q}_{\rho_2} = \mathbf{V_{\rho_2}}\boldsymbol \Lambda_{\rho_2}\mathbf{V_{\rho_2}}^T
+\end{aligned}
+$$
+
+Spectral decomposition defined by value/vector pairs of smaller matrices
+
+::: {.column width="50%"}
+$$
+\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j
+$$
+:::
+
+::: {.column widht="50%"}
+$$
+\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j
+$$
+:::
+
+-   Problem: $\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} \neq  1$
+-   Solution: $\mathbf{\widetilde  Q} = \mathbf{D}\mathbf{Q}\mathbf{D}$, where $\mathbf D_{ii} = \sqrt{\boldsymbol \Sigma_{ii}}$
+:::
+
+## Marginal Standard Deviations
+
+::: {style="font-size:70%"}
+$$
+\boldsymbol \Sigma = \mathbf Q^{-1} = (\mathbf{V}\boldsymbol\Lambda\mathbf{V}^T)^{-1} = \mathbf{V}\boldsymbol \Lambda^{-1}\mathbf{V}
+$$
+
+We know that if $A = BC$ then $A_{ii} = B_{i, .} C_{., i}$, so
+
+$$
+\boldsymbol \Sigma_{ii} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} (v^T)_{ki} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} v_{ik} = \sum_{k=1}^{n} v_{ik}^2 \frac{1}{\lambda_k}
+$$
+
+Let $\left\{\lambda\right\}_{ij} = \left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j$ and $\left\{\mathbf{v}\right\}_{ij} = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$. Compute vector $\boldsymbol \sigma^2$ containing all marginal variances
+
+$$ 
+\boldsymbol \sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2} 
+\frac{1}{\left\{\lambda\right\}_{ij}}
+\cdot 
+\left\{\mathbf{v}\right\}_{ij} \odot \left\{\mathbf{v}\right\}_{ij}
+$$
+:::
+
+## Marginal Standard Deviations
+
+::: {.columns style="font-size:60%"}
+::: {.column width="58%"}
+```{r}
+#| echo: true
+dim1 <- 50; dim2 <- 50
+rho1 <- 0.5; rho2 <- 0.3
+nu <- 2
+
+Q1 <- make_AR_prec_matrix(dim1, rho1)
+Q2 <- make_AR_prec_matrix(dim2, rho2)
+
+I1 <- Matrix::Diagonal(dim1)
+I2 <- Matrix::Diagonal(dim2)
+
+Q <- temp <- kronecker(Q1, I2) + kronecker(I1, Q2)
+for (i in seq_len(nu)) Q <- Q %*% temp
+```
+:::
+
+::: {.column width="42%"}
+```{r}
+#| echo: true
+msd <- function(Q1, Q2) {
+
+  E1 <- eigen(Q1)
+  E2 <- eigen(Q2)
+
+  marginal_sd_eigen(
+    E1$values, E1$vectors, dim1,
+    E2$values, E2$vectors, dim2,
+    nu
+  ) |> 
+  sort()
+}
+```
+:::
+:::
+
+::: {style="font-size:60%"}
+```{r}
+#| echo: true
+#| cache: true
+bench::mark(
+  "solve" = solve(Q) |> diag() |> sqrt() |> sort(),
+  "inla.qinv" = inla.qinv(Q) |> diag() |> sqrt() |> sort(),
+  "marginal_sd_eigen" = msd(Q1, Q2),
+  iterations = 10,
+  filter_gc = FALSE 
+)
+```
+:::
+
+## Calculating the (non-copula) density
+
+::: {style="font-size:70%"}
+The Gaussian log pdf is 
+$$
+\log f(\mathbf{z} \vert \mathbf{Q}) = \frac{1}{2}\left(\log|\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z}\right) + \mathrm{constant}
+$$
+
+Without scaling of $\mathbf Q$ we get
+
+$$
+\log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{j=2}^{n_2} \log\left[\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\right]
+$$
+
+$$
+\mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k \left(v_k^T\mathbf z\right)^2 = 
+\sum_{i=1}^{n_1}\sum_{j=2}^{n_2} 
+\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}
+\left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
+$$
+:::
+
+## Calculating the copula density
+
+::: {style="font-size:70%"}
+Let $\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$ and $\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}$. Normalise $\mathbf v$ and $\lambda$ with
+
+$$
+\begin{gathered}
+\widetilde{\mathbf{v}} = \frac{\sigma \odot \mathbf{v}}{\vert\vert \sigma \odot\mathbf{v}\vert\vert_2}, \qquad
+\widetilde{\lambda} = \vert\vert \sigma \odot\mathbf{v}\vert\vert_2^2 \cdot \lambda
+\end{gathered}
+$$
+
+Then $\widetilde{\mathbf{v}}$ and $\widetilde{\lambda}$ are an eigenvector/value pair of the scaled precision matrix $\mathbf{\widetilde{Q}}$. Iterate over $i$ and $j$ to calculate
+
+$$
+\log c(\mathbf{z} \vert \mathbf{\widetilde{Q}}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
+$$
+:::
+
+## Maximum Likelihood
+
+::: {.columns style="font-size:45%"}
+::: {.column width="60%"}
+**Setup**
+
+```{r}
+#| echo: true
+library(stdmatern)
+dim1 <- 50; dim2 <- 50
+rho1 <- 0.9; rho2 <- 0.5
+nu <- 1; n_obs <- 5
+Z <- rmatern_copula_eigen(n_obs, dim1, dim2, rho1, rho2, nu)
+U <- pnorm(Z)
+Y <- qgev(U, loc = 6, scale = 2, shape = 0.1)
+```
+
+**Log-likelihood**
+
+```{r}
+#| echo: true
+log_lik <- function(par, Y) {
+  mu <- exp(par[1])
+  sigma <- exp(par[2] + par[1])
+  xi <- exp(par[3])
+  rho1 <- plogis(par[4]); rho2 <- plogis(par[5])
+  u <- evd::pgev(Y, loc = mu, scale = sigma, shape = xi)
+  z <- qnorm(u)
+  ll_marg <- sum(evd::dgev(Y, loc = mu, scale = sigma, shape = xi, log = TRUE))
+  ll_copula <- sum(dmatern_copula_eigen(z, dim1, dim2, rho1, rho2, nu))
+  ll_copula + ll_marg
+}
+```
+
+**Optimize**
+
+```{r}
+#| echo: true
+#| cache: true
+tictoc::tic()
+res <- optim(par = c(0, 0, 0, 0, 0),
+  log_lik,
+  control = list(fnscale = -1),
+  Y = Y,
+  hessian = TRUE,
+  method = "L-BFGS-B")
+tictoc::toc()
+```
+:::
+
+::: {.column width="40%"}
+<br> <br>
+
+**Results**
+
+```{r}
+#| echo: true
+se <- sqrt(diag(solve(-res$hessian)))
+ci <- res$par + c(-1.96, 1.96) * se
+```
+
+```{r}
+tibble(
+  par = c("mu_", "sigma_", "xi_", "rho_1", "rho_2"),
+  estimate = res$par,
+  se = se
+) |>
+  mutate(
+    lower = estimate - 1.96 * se,
+    upper = estimate + 1.96 * se
+  ) |>
+  select(-se) |>
+  pivot_longer(
+    cols = c(estimate, lower, upper),
+    names_to = "statistic",
+    values_to = "value"
+  ) |>
+  pivot_wider(names_from = par, values_from = value) |>
+  mutate(
+    mu_ = exp(mu_),
+    sigma_ = exp(sigma_) * mu_,
+    xi_ = exp(xi_),
+    rho_1 = plogis(rho_1),
+    rho_2 = plogis(rho_2)
+  ) |>
+  pivot_longer(cols = -statistic, names_to = "par", values_to = "value") |>
+  pivot_wider(names_from = statistic, values_from = value) |>
+  mutate(
+    par = str_c("<b>&", par, "</sub></b>") |>
+      str_replace("_", ";<sub>")
+  ) |>
+  gt() |>
+  fmt_markdown(columns = par) |>
+  fmt_number(decimals = 3) |>
+  cols_label(
+    par = "",
+    estimate = "Estimate",
+    lower = "Lower",
+    upper = "Upper"
+  ) |>
+  tab_spanner(
+    label = "95% CI",
+    columns = c(lower, upper)
+  )  |> 
+  tab_options(table.width = pct(100)) |> 
+  opt_row_striping(TRUE)
+```
+:::
+:::
+
+## Copula-Extended Max-and-Smooth {data-name="Copula-Extension"}
+
+::: {.columns style="font-size:60%"}
+### Three-Step Approach with Spatial Dependence
+
+1. **Copula Step**: Copula Parameters
+    - Estimate copula parameters $(\rho_1, \rho_2)$ using empirical CDF
+
+::: {.column width="50%"}
+
+2. **Max Step**: Copula-Based Likelihood
+   - Joint estimation across replicates (not locations):
+   $$
+   \ell(\theta|Y) = \sum_{t=1}^T \left[\ell_{\text{GEV}}(Y_{t}) + \ell_{\text{copula}}(Z_t)\right]
+   $$
+   - Where $Z_t = \Phi^{-1}(F_{\text{GEV}}(Y_t))$
+   - Precision matrix $\mathbf{Q}$ with parameters $\rho_1, \rho_2, \nu$
+
+:::
+::: {.column width="50%"}
+
+3. **Smooth Step**: Enhanced Spatial Model
+   - Unchanged Gaussian approximation:
+   $$
+   \hat{\eta} \mid \eta \sim N(\eta, \mathbf{Q}_{\eta y}^{-1})
+   $$
+   - Now $\mathbf{Q}_{\eta y}$ includes dependence information from copula
+   - Parameter-level spatial priors:
+   $$
+   \eta \mid \theta \sim N(0, \mathbf{Q}_\eta(\theta)^{-1})
+   $$
+:::
+:::
+
+## Hessians
+
+::: {.columns}
+::: {.column width="50%"}
+![](images/iid/hessian.png)
+:::
+::: {.column width="50%"}
+![](images/copula/hessian.png)
+:::
+:::
+
+## Computational Implementation
+
+::: {style="font-size:65%"}
+### Efficient Three-Stage Implementation
+
+**Copula Step (recently finished)**
+
+- Use `eigen` in C++ for efficient calculations as shown before
+
+::: {.columns}
+::: {.column width="50%"}
+**Max Step (TMB)**
+
+- Template Model Builder [@kristensen2016] for maximum likelihood
+- Automatic differentiation
+- Parallel processing of station-wise estimates
+- Efficient sparse Hessians
+:::
+
+::: {.column width="50%"}
+**Smooth Step (Stan)**
+
+- Full Bayesian posterior via HMC [@carpenter2017]
+- BYM2 spatial prior implementation
+- Scales well to large number of parameters
+- Use `csr_times_vector()` for data-level likelihood
+:::
+:::
+1. Estimate copula parameters using R package in development
+2. Get MLEs and Hessians from TMB
+3. Pass $\hat \eta$ and CSR version of $L_{\eta y}$ into Stan
+4. Stan gives full posterior of Gaussian-Gaussian model
+:::
+
+## Results
+
+![](images/copula/max_smooth_compare_densities.png)
+
+## 
+
+![](images/copula/max_smooth_compare_station_scatterplot.png)
+
+##
+
+![](images/copula/location_unconstrained_spatial.png)
+
+##
+
+![](images/copula/location_constrained_spatial.png)
+
+##
+
+![](images/copula/scale_unconstrained_spatial.png)
+
+##
+
+![](images/copula/scale_constrained_spatial.png)
+
+##
+
+![](images/copula/shape_unconstrained_spatial.png)
+
+##
+
+![](images/copula/shape_constrained_spatial.png)
+
+## Summary and Conclusions
+
+::: {style="font-size:65%"}
+
+::: {.columns}
+::: {.column width="50%"}
+**Methodology**
+
+- Copula-Extended Latent Gaussian Models
+- Matérn-like Gaussian copula implementation
+- Max-and-Smooth for fast large-scale inference
+:::
+
+::: {.column width="50%"}
+**Computational Implementation**
+
+- Three-stage pipeline combining specialized tools:
+  1. Copula parameter estimation
+  2. TMB for ML and sparse Hessians
+  3. Stan for fast Gaussian-Gaussian posterior sampling
+:::
+:::
+
+**Future Direction**
+
+- Application to full UKCP Local Projections (5km grid)
+- Extension to linear predictors and space-time dependence
+- t-copula for tail dependence
+- Integration with risk assessment frameworks
+- Further software development and R package release
+:::
+
+# References
+
+::: {#refs style="font-size:55%"}
+:::
