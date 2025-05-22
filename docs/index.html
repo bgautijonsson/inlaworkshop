@@ -254,26 +254,6 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <p><img data-src="images/ukcp_data.png" style="width:100.0%"></p>
 </div></div>
 </section>
-<section id="latent-gaussian-model" class="slide level2">
-<h2>Latent Gaussian Model</h2>
-<div style="font-size:80%">
-<ul>
-<li><strong>GEV model for precipitation extremes</strong>
-<ol type="1">
-<li><em>Data:</em> <span class="math inline">\(y_i \mid \mu_i, \sigma, \xi \sim \text{GEV}(\mu_i, \sigma, \xi)\)</span><br>
-</li>
-<li><em>Latent field:</em> <span class="math inline">\(\eta = (\log \mu_1, \ldots, \log \mu_n)^\top \sim \mathcal{N}(\boldsymbol{\mu}(\theta), \mathbf{Q}^{-1}(\theta))\)</span></li>
-<li><em>Hyper-parameters:</em> <span class="math inline">\(\theta =\)</span> e.g.&nbsp;mean, range, variance, spatial correlation</li>
-</ol></li>
-<li><strong>Structured additive predictor for location parameter</strong><br>
-<span class="math display">\[
-\log(\mu_i) = \beta_0 + \beta_1 \text{temperature}_i + u_{\text{region}[i]} + \varepsilon_i
-\]</span></li>
-<li><strong>What’s great:</strong> Location-specific location parameter with spatial dependence, while maintaining computational tractability for 43,920 locations.</li>
-<li><strong>What we’re missing:</strong> Spatial dependence for scale, shape and trend parameters.</li>
-</ul>
-</div>
-</section>
 <section id="extended-lgm-multivariate-link-function" class="slide level2">
 <h2>Extended LGM: Multivariate Link Function</h2>
 <div style="font-size:80%">

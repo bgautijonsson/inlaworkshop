@@ -51,23 +51,6 @@ library(evd)
 :::
 :::
 
-## Latent Gaussian Model
-
-::: {style="font-size:80%"}
-- **GEV model for precipitation extremes**  
-  1) *Data:* $y_i \mid \mu_i, \sigma, \xi \sim \text{GEV}(\mu_i, \sigma, \xi)$  
-  2) *Latent field:* $\eta = (\log \mu_1, \ldots, \log \mu_n)^\top \sim \mathcal{N}(\boldsymbol{\mu}(\theta), \mathbf{Q}^{-1}(\theta))$
-  3) *Hyper-parameters:* $\theta =$ e.g. mean, range, variance, spatial correlation
-- **Structured additive predictor for location parameter**  
-  $$
-  \log(\mu_i) = \beta_0 + \beta_1 \text{temperature}_i + u_{\text{region}[i]} + \varepsilon_i
-  $$
-- **What's great:** Location-specific location parameter with spatial dependence, while maintaining computational tractability for 43,920 locations.
-- **What we're missing:** Spatial dependence for scale, shape and trend parameters.
-:::
-
-
-
 ## Extended LGM: Multivariate Link Function
 
 ::: {style="font-size:80%"}
