@@ -163,14 +163,17 @@ where $\eta$ is the latent field, $\theta$ are hyperparameters, and $\hat{\eta}$
 ## 
 
 ::: {.columns}
-::: {.column width="33%"}
+::: {.column width="25%"}
 ![](images/iid/psi.png){width=100%}
 :::
-::: {.column width="33%"}
+::: {.column width="25%"}
 ![](images/iid/tau.png){width=100%}
 :::
-::: {.column width="33%"}
+::: {.column width="25%"}
 ![](images/iid/phi.png){width=100%}
+:::
+::: {.column width="25%"}
+![](images/iid/gamma.png){width=100%}
 :::
 :::
 
@@ -178,15 +181,18 @@ where $\eta$ is the latent field, $\theta$ are hyperparameters, and $\hat{\eta}$
 ## 
 
 ::: {.columns}
-::: {.column width="33%"}
+::: {.column width="25%"}
 
 ![](images/iid/mu.png){width=100%}
 :::
-::: {.column width="33%"}
+::: {.column width="25%"}
 ![](images/iid/sigma.png){width=100%}
 :::
-::: {.column width="33%"}
+::: {.column width="25%"}
 ![](images/iid/xi.png){width=100%}
+:::
+::: {.column width="25%"}
+![](images/iid/gamma.png){width=100%}
 :::
 :::
 
@@ -249,11 +255,8 @@ options(width = 648)
 
 ```{r}
 #| echo: false
-set.seed(5)
-```
 
-```{r}
-#| echo: false
+set.seed(5)
 Q <- make_AR_prec_matrix(dim = 60, rho = 0.9)
 Z <- rmvn.sparse(n = 1, mu = rep(0, nrow(Q)), CH = Cholesky(Q)) |>
   as.numeric()
@@ -285,14 +288,9 @@ tibble(
 ## Gaussian AR(1) Process
 
 ```{r}
-#| echo: false
-set.seed(5)
-```
-
-```{r}
 #| echo: true
+#| eval: false
 Q <- make_AR_prec_matrix(dim = 60, rho = 0.9)
-set.seed(2)
 Z <- rmvn.sparse(n = 1, mu = rep(0, nrow(Q)), CH = Cholesky(Q)) |>
   as.numeric()
 ```
@@ -418,7 +416,82 @@ tibble(
   facet_wrap(~variable, scales = "free_y")
 ```
 
-## Matérn-like Gaussian Copula
+## Spatial Gaussian Data
+
+```{r}
+#| echo: false
+
+set.seed(5)
+dim1 <- 200
+dim2 <- 100
+rho1 <- 0.6
+rho2 <- 0.9
+nu <- 2
+Z <- rmatern_copula_eigen(1, dim1, dim2, rho1, rho2, nu)
+```
+
+```{r}
+#| echo: false
+tibble(
+  Z = as.numeric(Z[, 1])
+) |>
+  mutate(
+    x = rep(seq_len(dim1), each = dim2),
+    y = rep(seq_len(dim2), times = dim1),
+  ) |>
+  ggplot(aes(x, y, fill = Z)) +
+  geom_raster() +
+  scale_fill_distiller(palette = "RdBu") +
+  coord_fixed(expand = FALSE)
+```
+
+## Transformed to Uniform
+
+```{r}
+#| echo: false
+tibble(
+  Z = as.numeric(Z[, 1]),
+  U = pnorm(Z)
+) |>
+  mutate(
+    x = rep(seq_len(dim1), each = dim2),
+    y = rep(seq_len(dim2), times = dim1),
+  ) |>
+  ggplot(aes(x, y, fill = U)) +
+  geom_raster() +
+  scale_fill_distiller(
+    palette = "RdBu",
+    limits = c(0, 1)
+  ) +
+  coord_fixed(expand = FALSE)
+```
+
+## Transformed to GEV(11, 4, 0.2)
+
+```{r}
+#| echo: false
+tibble(
+  Z = as.numeric(Z[, 1]),
+  U = pnorm(Z),
+  Y = qgev(U, loc = 11, scale = 4, shape = 0.2)
+) |>
+  mutate(
+    x = rep(seq_len(dim1), each = dim2),
+    y = rep(seq_len(dim2), times = dim1),
+  ) |>
+  ggplot(aes(x, y, fill = Y)) +
+  geom_raster() +
+  scale_fill_distiller(
+    palette = "RdBu"
+  ) +
+  coord_fixed(expand = FALSE)
+```
+
+## It's just a density
+
+![](images/predator.jpg){fig-align="center"}
+
+## Large-Scale Spatial Gaussian Copula?
 
 ::: {style="font-size:55%"}
 
@@ -583,13 +656,13 @@ Spectral decomposition defined by value/vector pairs of smaller matrices
 
 ::: {.column width="50%"}
 $$
-\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j
+\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}
 $$
 :::
 
-::: {.column widht="50%"}
+::: {.column width="50%"}
 $$
-\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j
+\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)
 $$
 :::
 
@@ -668,7 +741,7 @@ bench::mark(
   "solve" = solve(Q) |> diag() |> sqrt() |> sort(),
   "inla.qinv" = inla.qinv(Q) |> diag() |> sqrt() |> sort(),
   "marginal_sd_eigen" = msd(Q1, Q2),
-  iterations = 10,
+  iterations = 10, 
   filter_gc = FALSE 
 )
 ```
@@ -724,7 +797,7 @@ where
 
 $$
 \begin{aligned}
-\mathbf{D_ii} = \sigma_i
+\mathbf{D} = \text{diag}\left(\boldsymbol \sigma\right)
 \end{aligned}
 $$
 
@@ -840,6 +913,10 @@ tibble(
 :::
 :::
 
+## It only a Hessian
+
+![](images/only_a_hessian.png){fig-align="center"}
+
 ## Copula-Extended Max-and-Smooth {data-name="Copula-Extension"}
 
 ::: {.columns style="font-size:60%"}
@@ -908,7 +985,7 @@ tibble(
 **Smooth Step (Stan)**
 
 - Full Bayesian posterior via HMC [@carpenter2017]
-- BYM2 spatial prior implementation
+- BYM2 spatial prior implementation [@riebler2016; @simpson2015]
 - Scales well to large number of parameters
 - Use `csr_times_vector()` for data-level likelihood
 :::
@@ -929,27 +1006,35 @@ tibble(
 
 ##
 
-![](images/copula/location_unconstrained_spatial.png)
+![](images/copula/psi.png)
 
 ##
 
-![](images/copula/location_constrained_spatial.png)
+![](images/copula/mu.png)
 
 ##
 
-![](images/copula/scale_unconstrained_spatial.png)
+![](images/copula/tau.png)
 
 ##
 
-![](images/copula/scale_constrained_spatial.png)
+![](images/copula/sigma.png)
 
 ##
 
-![](images/copula/shape_unconstrained_spatial.png)
+![](images/copula/phi.png)
 
 ##
 
-![](images/copula/shape_constrained_spatial.png)
+![](images/copula/xi.png)
+
+##
+
+![](images/copula/gamma.png)
+
+##
+
+![](images/copula/Delta.png)
 
 ## Summary and Conclusions
 

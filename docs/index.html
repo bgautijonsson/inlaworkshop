@@ -364,23 +364,27 @@ p(\eta, \theta \mid \hat{\eta}) \propto p(\hat{\eta} \mid \eta)p(\eta \mid \thet
 <section id="section" class="slide level2">
 <h2></h2>
 <div class="columns">
-<div class="column" style="width:33%;">
+<div class="column" style="width:25%;">
 <p><img data-src="images/iid/psi.png" style="width:100.0%"></p>
-</div><div class="column" style="width:33%;">
+</div><div class="column" style="width:25%;">
 <p><img data-src="images/iid/tau.png" style="width:100.0%"></p>
-</div><div class="column" style="width:33%;">
+</div><div class="column" style="width:25%;">
 <p><img data-src="images/iid/phi.png" style="width:100.0%"></p>
+</div><div class="column" style="width:25%;">
+<p><img data-src="images/iid/gamma.png" style="width:100.0%"></p>
 </div></div>
 </section>
 <section id="section-1" class="slide level2">
 <h2></h2>
 <div class="columns">
-<div class="column" style="width:33%;">
+<div class="column" style="width:25%;">
 <p><img data-src="images/iid/mu.png" style="width:100.0%"></p>
-</div><div class="column" style="width:33%;">
+</div><div class="column" style="width:25%;">
 <p><img data-src="images/iid/sigma.png" style="width:100.0%"></p>
-</div><div class="column" style="width:33%;">
+</div><div class="column" style="width:25%;">
 <p><img data-src="images/iid/xi.png" style="width:100.0%"></p>
+</div><div class="column" style="width:25%;">
+<p><img data-src="images/iid/gamma.png" style="width:100.0%"></p>
 </div></div>
 </section>
 <section id="from-data-level-independence-to-dependence" class="slide level2">
@@ -415,21 +419,20 @@ h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
 <section id="copulas" class="slide level2" data-name="Copulas">
 <h2>Copulas?</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
 <section id="gaussian-ar1-process" class="slide level2">
 <h2>Gaussian AR(1) Process</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>Q <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(<span class="at">dim =</span> <span class="dv">60</span>, <span class="at">rho =</span> <span class="fl">0.9</span>)</span>
-<span id="cb1-2"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
-<span id="cb1-3"><a href=""></a>Z <span class="ot">&lt;-</span> <span class="fu">rmvn.sparse</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(Q)), <span class="at">CH =</span> <span class="fu">Cholesky</span>(Q)) <span class="sc">|&gt;</span></span>
-<span id="cb1-4"><a href=""></a>  <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href=""></a>Z <span class="ot">&lt;-</span> <span class="fu">rmvn.sparse</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(Q)), <span class="at">CH =</span> <span class="fu">Cholesky</span>(Q)) <span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href=""></a>  <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
 <section id="copula-1" class="slide level2">
 <h2>Copula?</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section id="gev-ar1-process" class="slide level2">
 <h2>GEV AR(1) Process?</h2>
 <div class="cell">
@@ -437,13 +440,29 @@ h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
 <span id="cb2-2"><a href=""></a>Y <span class="ot">&lt;-</span> <span class="fu">qgev</span>(U, <span class="at">loc =</span> <span class="dv">11</span>, <span class="at">scale =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
 <section id="from-gaussian-to-gev" class="slide level2">
 <h2>From Gaussian to GEV</h2>
 
+<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
+<section id="spatial-gaussian-data" class="slide level2">
+<h2>Spatial Gaussian Data</h2>
+
 <img data-src="index_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"></section>
-<section id="matérn-like-gaussian-copula" class="slide level2">
-<h2>Matérn-like Gaussian Copula</h2>
+<section id="transformed-to-uniform" class="slide level2">
+<h2>Transformed to Uniform</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
+<section id="transformed-to-gev11-4-0.2" class="slide level2">
+<h2>Transformed to GEV(11, 4, 0.2)</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
+<section id="its-just-a-density" class="slide level2">
+<h2>It’s just a density</h2>
+
+<img data-src="images/predator.jpg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="large-scale-spatial-gaussian-copula" class="slide level2">
+<h2>Large-Scale Spatial Gaussian Copula?</h2>
 <div style="font-size:55%">
 <p><span class="math display">\[
 \begin{gathered}
@@ -578,11 +597,11 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 \end{aligned}
 \]</span></p><p>Spectral decomposition defined by value/vector pairs of smaller matrices</p><div class="column" style="width:50%;">
 <p><span class="math display">\[
-\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j
+\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}
 \]</span></p>
-</div><div class="column" data-widht="50%">
+</div><div class="column" style="width:50%;">
 <p><span class="math display">\[
-\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j
+\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)
 \]</span></p>
 </div><ul>
 <li>Problem: <span class="math inline">\(\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} \neq  1\)</span></li>
@@ -649,16 +668,16 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <span id="cb5-2"><a href=""></a>  <span class="st">"solve"</span> <span class="ot">=</span> <span class="fu">solve</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
 <span id="cb5-3"><a href=""></a>  <span class="st">"inla.qinv"</span> <span class="ot">=</span> <span class="fu">inla.qinv</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
 <span id="cb5-4"><a href=""></a>  <span class="st">"marginal_sd_eigen"</span> <span class="ot">=</span> <span class="fu">msd</span>(Q1, Q2),</span>
-<span id="cb5-5"><a href=""></a>  <span class="at">iterations =</span> <span class="dv">10</span>,</span>
+<span id="cb5-5"><a href=""></a>  <span class="at">iterations =</span> <span class="dv">10</span>, </span>
 <span id="cb5-6"><a href=""></a>  <span class="at">filter_gc =</span> <span class="cn">FALSE</span> </span>
 <span id="cb5-7"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
   expression             min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt;        &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 solve                1.17s    1.19s     0.820   78.15MB    0.656
-2 inla.qinv         449.03ms 452.39ms     2.12     4.32MB    0.425
-3 marginal_sd_eigen   1.34ms   1.39ms   610.     645.27KB    0    </code></pre>
+1 solve                1.16s    1.18s     0.830   78.15MB    0.664
+2 inla.qinv         457.93ms 460.26ms     2.16     4.34MB    0    
+3 marginal_sd_eigen   1.39ms    1.5ms   597.     645.27KB    0    </code></pre>
 </div>
 </div>
 </div>
@@ -702,7 +721,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <p>where</p>
 <p><span class="math display">\[
 \begin{aligned}
-\mathbf{D_ii} = \sigma_i
+\mathbf{D} = \text{diag}\left(\boldsymbol \sigma\right)
 \end{aligned}
 \]</span></p>
 </div>
@@ -746,7 +765,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <span id="cb9-7"><a href=""></a>  <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>)</span>
 <span id="cb9-8"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>1.829 sec elapsed</code></pre>
+<pre><code>2.001 sec elapsed</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:40%;">
@@ -758,23 +777,23 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div id="qlyrywtadv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#qlyrywtadv table {
+<div id="bkyokyiugw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#bkyokyiugw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#qlyrywtadv thead, #qlyrywtadv tbody, #qlyrywtadv tfoot, #qlyrywtadv tr, #qlyrywtadv td, #qlyrywtadv th {
+#bkyokyiugw thead, #bkyokyiugw tbody, #bkyokyiugw tfoot, #bkyokyiugw tr, #bkyokyiugw td, #bkyokyiugw th {
   border-style: none;
 }
 
-#qlyrywtadv p {
+#bkyokyiugw p {
   margin: 0;
   padding: 0;
 }
 
-#qlyrywtadv .gt_table {
+#bkyokyiugw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -800,12 +819,12 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-left-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_caption {
+#bkyokyiugw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#qlyrywtadv .gt_title {
+#bkyokyiugw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -817,7 +836,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-bottom-width: 0;
 }
 
-#qlyrywtadv .gt_subtitle {
+#bkyokyiugw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -829,7 +848,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-top-width: 0;
 }
 
-#qlyrywtadv .gt_heading {
+#bkyokyiugw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -841,13 +860,13 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-right-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_bottom_border {
+#bkyokyiugw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_col_headings {
+#bkyokyiugw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -862,7 +881,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-right-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_col_heading {
+#bkyokyiugw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -882,7 +901,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   overflow-x: hidden;
 }
 
-#qlyrywtadv .gt_column_spanner_outer {
+#bkyokyiugw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -894,15 +913,15 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   padding-right: 4px;
 }
 
-#qlyrywtadv .gt_column_spanner_outer:first-child {
+#bkyokyiugw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qlyrywtadv .gt_column_spanner_outer:last-child {
+#bkyokyiugw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qlyrywtadv .gt_column_spanner {
+#bkyokyiugw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -914,11 +933,11 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   width: 100%;
 }
 
-#qlyrywtadv .gt_spanner_row {
+#bkyokyiugw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#qlyrywtadv .gt_group_heading {
+#bkyokyiugw .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -944,7 +963,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   text-align: left;
 }
 
-#qlyrywtadv .gt_empty_group_heading {
+#bkyokyiugw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -959,15 +978,15 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   vertical-align: middle;
 }
 
-#qlyrywtadv .gt_from_md > :first-child {
+#bkyokyiugw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qlyrywtadv .gt_from_md > :last-child {
+#bkyokyiugw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qlyrywtadv .gt_row {
+#bkyokyiugw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -986,7 +1005,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   overflow-x: hidden;
 }
 
-#qlyrywtadv .gt_stub {
+#bkyokyiugw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -999,7 +1018,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   padding-right: 5px;
 }
 
-#qlyrywtadv .gt_stub_row_group {
+#bkyokyiugw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1013,15 +1032,15 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   vertical-align: top;
 }
 
-#qlyrywtadv .gt_row_group_first td {
+#bkyokyiugw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qlyrywtadv .gt_row_group_first th {
+#bkyokyiugw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#qlyrywtadv .gt_summary_row {
+#bkyokyiugw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1031,16 +1050,16 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   padding-right: 5px;
 }
 
-#qlyrywtadv .gt_first_summary_row {
+#bkyokyiugw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_first_summary_row.thick {
+#bkyokyiugw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qlyrywtadv .gt_last_summary_row {
+#bkyokyiugw .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1050,7 +1069,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-bottom-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_grand_summary_row {
+#bkyokyiugw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1060,7 +1079,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   padding-right: 5px;
 }
 
-#qlyrywtadv .gt_first_grand_summary_row {
+#bkyokyiugw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1070,7 +1089,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-top-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_last_grand_summary_row_top {
+#bkyokyiugw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1080,11 +1099,11 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-bottom-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_striped {
+#bkyokyiugw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qlyrywtadv .gt_table_body {
+#bkyokyiugw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1093,7 +1112,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-bottom-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_footnotes {
+#bkyokyiugw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1107,7 +1126,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-right-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_footnote {
+#bkyokyiugw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1116,7 +1135,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   padding-right: 5px;
 }
 
-#qlyrywtadv .gt_sourcenotes {
+#bkyokyiugw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1130,7 +1149,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   border-right-color: #D3D3D3;
 }
 
-#qlyrywtadv .gt_sourcenote {
+#bkyokyiugw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1138,72 +1157,72 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   padding-right: 5px;
 }
 
-#qlyrywtadv .gt_left {
+#bkyokyiugw .gt_left {
   text-align: left;
 }
 
-#qlyrywtadv .gt_center {
+#bkyokyiugw .gt_center {
   text-align: center;
 }
 
-#qlyrywtadv .gt_right {
+#bkyokyiugw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qlyrywtadv .gt_font_normal {
+#bkyokyiugw .gt_font_normal {
   font-weight: normal;
 }
 
-#qlyrywtadv .gt_font_bold {
+#bkyokyiugw .gt_font_bold {
   font-weight: bold;
 }
 
-#qlyrywtadv .gt_font_italic {
+#bkyokyiugw .gt_font_italic {
   font-style: italic;
 }
 
-#qlyrywtadv .gt_super {
+#bkyokyiugw .gt_super {
   font-size: 65%;
 }
 
-#qlyrywtadv .gt_footnote_marks {
+#bkyokyiugw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#qlyrywtadv .gt_asterisk {
+#bkyokyiugw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qlyrywtadv .gt_indent_1 {
+#bkyokyiugw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qlyrywtadv .gt_indent_2 {
+#bkyokyiugw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qlyrywtadv .gt_indent_3 {
+#bkyokyiugw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qlyrywtadv .gt_indent_4 {
+#bkyokyiugw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qlyrywtadv .gt_indent_5 {
+#bkyokyiugw .gt_indent_5 {
   text-indent: 25px;
 }
 
-#qlyrywtadv .katex-display {
+#bkyokyiugw .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#qlyrywtadv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#bkyokyiugw div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1231,33 +1250,33 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <tbody class="gt_table_body">
 <tr class="odd">
 <td class="gt_row gt_left" headers="par"><b>μ<sub></sub></b></td>
-<td class="gt_row gt_right" headers="estimate">6.221</td>
-<td class="gt_row gt_right" headers="lower">5.992</td>
-<td class="gt_row gt_right" headers="upper">6.458</td>
+<td class="gt_row gt_right" headers="estimate">6.105</td>
+<td class="gt_row gt_right" headers="lower">5.875</td>
+<td class="gt_row gt_right" headers="upper">6.344</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left gt_striped" headers="par"><b>σ<sub></sub></b></td>
-<td class="gt_row gt_right gt_striped" headers="estimate">2.090</td>
-<td class="gt_row gt_right gt_striped" headers="lower">1.926</td>
-<td class="gt_row gt_right gt_striped" headers="upper">2.268</td>
+<td class="gt_row gt_right gt_striped" headers="estimate">2.077</td>
+<td class="gt_row gt_right gt_striped" headers="lower">1.912</td>
+<td class="gt_row gt_right gt_striped" headers="upper">2.256</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="par"><b>ξ<sub></sub></b></td>
-<td class="gt_row gt_right" headers="estimate">0.098</td>
-<td class="gt_row gt_right" headers="lower">0.079</td>
-<td class="gt_row gt_right" headers="upper">0.120</td>
+<td class="gt_row gt_right" headers="estimate">0.111</td>
+<td class="gt_row gt_right" headers="lower">0.091</td>
+<td class="gt_row gt_right" headers="upper">0.134</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left gt_striped" headers="par"><b>ρ<sub>1</sub></b></td>
-<td class="gt_row gt_right gt_striped" headers="estimate">0.898</td>
-<td class="gt_row gt_right gt_striped" headers="lower">0.893</td>
-<td class="gt_row gt_right gt_striped" headers="upper">0.903</td>
+<td class="gt_row gt_right gt_striped" headers="estimate">0.901</td>
+<td class="gt_row gt_right gt_striped" headers="lower">0.895</td>
+<td class="gt_row gt_right gt_striped" headers="upper">0.906</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="par"><b>ρ<sub>2</sub></b></td>
-<td class="gt_row gt_right" headers="estimate">0.499</td>
-<td class="gt_row gt_right" headers="lower">0.476</td>
-<td class="gt_row gt_right" headers="upper">0.522</td>
+<td class="gt_row gt_right" headers="estimate">0.500</td>
+<td class="gt_row gt_right" headers="lower">0.477</td>
+<td class="gt_row gt_right" headers="upper">0.523</td>
 </tr>
 </tbody>
 </table>
@@ -1267,6 +1286,10 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 </div>
 </div></div>
 </section>
+<section id="it-only-a-hessian" class="slide level2">
+<h2>It only a Hessian</h2>
+
+<img data-src="images/only_a_hessian.png" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="copula-extended-max-and-smooth" class="slide level2" data-name="Copula-Extension">
 <h2>Copula-Extended Max-and-Smooth</h2>
 <div class="columns" style="font-size:60%">
@@ -1333,7 +1356,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <p><strong>Smooth Step (Stan)</strong></p>
 <ul>
 <li>Full Bayesian posterior via HMC <span class="citation" data-cites="carpenter2017">[<a href="#/references" role="doc-biblioref" onclick="">4</a>]</span></li>
-<li>BYM2 spatial prior implementation</li>
+<li>BYM2 spatial prior implementation <span class="citation" data-cites="riebler2016 simpson2015">[<a href="#/references" role="doc-biblioref" onclick="">10</a>–<a href="#/references" role="doc-biblioref" onclick="">11</a>]</span></li>
 <li>Scales well to large number of parameters</li>
 <li>Use <code>csr_times_vector()</code> for data-level likelihood</li>
 </ul>
@@ -1357,27 +1380,35 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <section id="section-3" class="slide level2">
 <h2></h2>
 
-<img data-src="images/copula/location_unconstrained_spatial.png" class="r-stretch"></section>
+<img data-src="images/copula/psi.png" class="r-stretch"></section>
 <section id="section-4" class="slide level2">
 <h2></h2>
 
-<img data-src="images/copula/location_constrained_spatial.png" class="r-stretch"></section>
+<img data-src="images/copula/mu.png" class="r-stretch"></section>
 <section id="section-5" class="slide level2">
 <h2></h2>
 
-<img data-src="images/copula/scale_unconstrained_spatial.png" class="r-stretch"></section>
+<img data-src="images/copula/tau.png" class="r-stretch"></section>
 <section id="section-6" class="slide level2">
 <h2></h2>
 
-<img data-src="images/copula/scale_constrained_spatial.png" class="r-stretch"></section>
+<img data-src="images/copula/sigma.png" class="r-stretch"></section>
 <section id="section-7" class="slide level2">
 <h2></h2>
 
-<img data-src="images/copula/shape_unconstrained_spatial.png" class="r-stretch"></section>
+<img data-src="images/copula/phi.png" class="r-stretch"></section>
 <section id="section-8" class="slide level2">
 <h2></h2>
 
-<img data-src="images/copula/shape_constrained_spatial.png" class="r-stretch"></section>
+<img data-src="images/copula/xi.png" class="r-stretch"></section>
+<section id="section-9" class="slide level2">
+<h2></h2>
+
+<img data-src="images/copula/gamma.png" class="r-stretch"></section>
+<section id="section-10" class="slide level2">
+<h2></h2>
+
+<img data-src="images/copula/Delta.png" class="r-stretch"></section>
 <section id="summary-and-conclusions" class="slide level2">
 <h2>Summary and Conclusions</h2>
 <div style="font-size:65%">
@@ -1439,6 +1470,12 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 </div>
 <div id="ref-horn1991" class="csl-entry" role="listitem">
 <div class="csl-left-margin">9. </div><div class="csl-right-inline">R. A. Horn &amp; C. R. Johnson, <em><a href="https://www.cambridge.org/core/books/topics-in-matrix-analysis/B988495A235F1C3406EA484A2C477B03">Topics in matrix analysis</a></em> (Cambridge: Cambridge University Press, 1991).</div>
+</div>
+<div id="ref-riebler2016" class="csl-entry" role="listitem">
+<div class="csl-left-margin">10. </div><div class="csl-right-inline">A. Riebler, S. H. Sørbye, D. Simpson, &amp; H. Rue, <a href="https://journals.sagepub.com/doi/full/10.1177/0962280216660421">An intuitive bayesian spatial model for disease mapping that accounts for scaling</a>. (2016).</div>
+</div>
+<div id="ref-simpson2015" class="csl-entry" role="listitem">
+<div class="csl-left-margin">11. </div><div class="csl-right-inline">D. P. Simpson, H. Rue, T. G. Martins, A. Riebler, &amp; S. H. Sørbye, <a href="http://arxiv.org/abs/1403.4630">Penalising model component complexity: A principled, practical approach to constructing priors</a>. (2015).</div>
 </div>
 </div>
 
