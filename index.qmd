@@ -962,6 +962,17 @@ tibble(
 :::
 :::
 
+## Cholesky Factors
+
+::: {.columns}
+::: {.column width="50%"}
+![](images/iid/L.png)
+:::
+::: {.column width="50%"}
+![](images/copula/L.png)
+:::
+:::
+
 ## Computational Implementation
 
 ::: {style="font-size:65%"}
@@ -998,43 +1009,43 @@ tibble(
 
 ## Results
 
-![](images/copula/max_smooth_compare_densities.png)
+![](images/compare/comparison.png)
 
 ## 
 
-![](images/copula/max_smooth_compare_station_scatterplot.png)
+![](images/compare/iid_copula_compare.png)
 
 ##
 
-![](images/copula/psi.png)
+![](images/compare/psi.png)
 
 ##
 
-![](images/copula/mu.png)
+![](images/compare/mu.png)
 
 ##
 
-![](images/copula/tau.png)
+![](images/compare/tau.png)
 
 ##
 
-![](images/copula/sigma.png)
+![](images/compare/sigma.png)
 
 ##
 
-![](images/copula/phi.png)
+![](images/compare/phi.png)
 
 ##
 
-![](images/copula/xi.png)
+![](images/compare/xi.png)
 
 ##
 
-![](images/copula/gamma.png)
+![](images/compare/gamma.png)
 
 ##
 
-![](images/copula/Delta.png)
+![](images/compare/Delta.png)
 
 ## Summary and Conclusions
 
@@ -1044,7 +1055,7 @@ tibble(
 ::: {.column width="50%"}
 **Methodology**
 
-- Copula-Extended Latent Gaussian Models
+- Copula-Extended Latent Gaussian Model
 - Matérn-like Gaussian copula implementation
 - Max-and-Smooth for fast large-scale inference
 :::
@@ -1065,7 +1076,7 @@ tibble(
 - Extension to linear predictors and space-time dependence
 - t-copula for tail dependence
 - Integration with risk assessment frameworks
-- Further software development and R package release
+- Further software development for better user interface
 :::
 
 # References
