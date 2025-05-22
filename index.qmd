@@ -196,7 +196,9 @@ where $\eta$ is the latent field, $\theta$ are hyperparameters, and $\hat{\eta}$
 :::
 :::
 
+## Where I Came In
 
+![](images/jonahjameson.png){fig-align="center"}
 
 ## From Data-level Independence to Dependence
 
