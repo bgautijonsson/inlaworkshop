@@ -418,6 +418,12 @@ h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
 <img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
 <section id="gaussian-ar1-process" class="slide level2">
 <h2>Gaussian AR(1) Process</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>Q <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(<span class="at">dim =</span> <span class="dv">60</span>, <span class="at">rho =</span> <span class="fl">0.9</span>)</span>
+<span id="cb1-2"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb1-3"><a href=""></a>Z <span class="ot">&lt;-</span> <span class="fu">rmvn.sparse</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(Q)), <span class="at">CH =</span> <span class="fu">Cholesky</span>(Q)) <span class="sc">|&gt;</span></span>
+<span id="cb1-4"><a href=""></a>  <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 <img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section id="copula-1" class="slide level2">
@@ -427,8 +433,8 @@ h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
 <section id="gev-ar1-process" class="slide level2">
 <h2>GEV AR(1) Process?</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>U <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(Z)</span>
-<span id="cb1-2"><a href=""></a>Y <span class="ot">&lt;-</span> <span class="fu">qgev</span>(U, <span class="at">loc =</span> <span class="dv">11</span>, <span class="at">scale =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>U <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(Z)</span>
+<span id="cb2-2"><a href=""></a>Y <span class="ot">&lt;-</span> <span class="fu">qgev</span>(U, <span class="at">loc =</span> <span class="dv">11</span>, <span class="at">scale =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 <img data-src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
@@ -608,44 +614,44 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <div class="columns" style="font-size:60%">
 <div class="column" style="width:58%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>dim1 <span class="ot">&lt;-</span> <span class="dv">50</span>; dim2 <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb2-2"><a href=""></a>rho1 <span class="ot">&lt;-</span> <span class="fl">0.5</span>; rho2 <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
-<span id="cb2-3"><a href=""></a>nu <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb2-4"><a href=""></a></span>
-<span id="cb2-5"><a href=""></a>Q1 <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(dim1, rho1)</span>
-<span id="cb2-6"><a href=""></a>Q2 <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(dim2, rho2)</span>
-<span id="cb2-7"><a href=""></a></span>
-<span id="cb2-8"><a href=""></a>I1 <span class="ot">&lt;-</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(dim1)</span>
-<span id="cb2-9"><a href=""></a>I2 <span class="ot">&lt;-</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(dim2)</span>
-<span id="cb2-10"><a href=""></a></span>
-<span id="cb2-11"><a href=""></a>Q <span class="ot">&lt;-</span> temp <span class="ot">&lt;-</span> <span class="fu">kronecker</span>(Q1, I2) <span class="sc">+</span> <span class="fu">kronecker</span>(I1, Q2)</span>
-<span id="cb2-12"><a href=""></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(nu)) Q <span class="ot">&lt;-</span> Q <span class="sc">%*%</span> temp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>dim1 <span class="ot">&lt;-</span> <span class="dv">50</span>; dim2 <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb3-2"><a href=""></a>rho1 <span class="ot">&lt;-</span> <span class="fl">0.5</span>; rho2 <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
+<span id="cb3-3"><a href=""></a>nu <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb3-4"><a href=""></a></span>
+<span id="cb3-5"><a href=""></a>Q1 <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(dim1, rho1)</span>
+<span id="cb3-6"><a href=""></a>Q2 <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(dim2, rho2)</span>
+<span id="cb3-7"><a href=""></a></span>
+<span id="cb3-8"><a href=""></a>I1 <span class="ot">&lt;-</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(dim1)</span>
+<span id="cb3-9"><a href=""></a>I2 <span class="ot">&lt;-</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(dim2)</span>
+<span id="cb3-10"><a href=""></a></span>
+<span id="cb3-11"><a href=""></a>Q <span class="ot">&lt;-</span> temp <span class="ot">&lt;-</span> <span class="fu">kronecker</span>(Q1, I2) <span class="sc">+</span> <span class="fu">kronecker</span>(I1, Q2)</span>
+<span id="cb3-12"><a href=""></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(nu)) Q <span class="ot">&lt;-</span> Q <span class="sc">%*%</span> temp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:42%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>msd <span class="ot">&lt;-</span> <span class="cf">function</span>(Q1, Q2) {</span>
-<span id="cb3-2"><a href=""></a></span>
-<span id="cb3-3"><a href=""></a>  E1 <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Q1)</span>
-<span id="cb3-4"><a href=""></a>  E2 <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Q2)</span>
-<span id="cb3-5"><a href=""></a></span>
-<span id="cb3-6"><a href=""></a>  <span class="fu">marginal_sd_eigen</span>(</span>
-<span id="cb3-7"><a href=""></a>    E1<span class="sc">$</span>values, E1<span class="sc">$</span>vectors, dim1,</span>
-<span id="cb3-8"><a href=""></a>    E2<span class="sc">$</span>values, E2<span class="sc">$</span>vectors, dim2,</span>
-<span id="cb3-9"><a href=""></a>    nu</span>
-<span id="cb3-10"><a href=""></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb3-11"><a href=""></a>  <span class="fu">sort</span>()</span>
-<span id="cb3-12"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>msd <span class="ot">&lt;-</span> <span class="cf">function</span>(Q1, Q2) {</span>
+<span id="cb4-2"><a href=""></a></span>
+<span id="cb4-3"><a href=""></a>  E1 <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Q1)</span>
+<span id="cb4-4"><a href=""></a>  E2 <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Q2)</span>
+<span id="cb4-5"><a href=""></a></span>
+<span id="cb4-6"><a href=""></a>  <span class="fu">marginal_sd_eigen</span>(</span>
+<span id="cb4-7"><a href=""></a>    E1<span class="sc">$</span>values, E1<span class="sc">$</span>vectors, dim1,</span>
+<span id="cb4-8"><a href=""></a>    E2<span class="sc">$</span>values, E2<span class="sc">$</span>vectors, dim2,</span>
+<span id="cb4-9"><a href=""></a>    nu</span>
+<span id="cb4-10"><a href=""></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb4-11"><a href=""></a>  <span class="fu">sort</span>()</span>
+<span id="cb4-12"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div></div>
 <div style="font-size:60%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb4-2"><a href=""></a>  <span class="st">"solve"</span> <span class="ot">=</span> <span class="fu">solve</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
-<span id="cb4-3"><a href=""></a>  <span class="st">"inla.qinv"</span> <span class="ot">=</span> <span class="fu">inla.qinv</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
-<span id="cb4-4"><a href=""></a>  <span class="st">"marginal_sd_eigen"</span> <span class="ot">=</span> <span class="fu">msd</span>(Q1, Q2),</span>
-<span id="cb4-5"><a href=""></a>  <span class="at">iterations =</span> <span class="dv">10</span>,</span>
-<span id="cb4-6"><a href=""></a>  <span class="at">filter_gc =</span> <span class="cn">FALSE</span> </span>
-<span id="cb4-7"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb5-2"><a href=""></a>  <span class="st">"solve"</span> <span class="ot">=</span> <span class="fu">solve</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
+<span id="cb5-3"><a href=""></a>  <span class="st">"inla.qinv"</span> <span class="ot">=</span> <span class="fu">inla.qinv</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
+<span id="cb5-4"><a href=""></a>  <span class="st">"marginal_sd_eigen"</span> <span class="ot">=</span> <span class="fu">msd</span>(Q1, Q2),</span>
+<span id="cb5-5"><a href=""></a>  <span class="at">iterations =</span> <span class="dv">10</span>,</span>
+<span id="cb5-6"><a href=""></a>  <span class="at">filter_gc =</span> <span class="cn">FALSE</span> </span>
+<span id="cb5-7"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
   expression             min   median `itr/sec` mem_alloc `gc/sec`
@@ -707,38 +713,38 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <div class="column" style="width:60%;">
 <p><strong>Setup</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a><span class="fu">library</span>(stdmatern)</span>
-<span id="cb6-2"><a href=""></a>dim1 <span class="ot">&lt;-</span> <span class="dv">50</span>; dim2 <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb6-3"><a href=""></a>rho1 <span class="ot">&lt;-</span> <span class="fl">0.9</span>; rho2 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
-<span id="cb6-4"><a href=""></a>nu <span class="ot">&lt;-</span> <span class="dv">1</span>; n_obs <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb6-5"><a href=""></a>Z <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_eigen</span>(n_obs, dim1, dim2, rho1, rho2, nu)</span>
-<span id="cb6-6"><a href=""></a>U <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(Z)</span>
-<span id="cb6-7"><a href=""></a>Y <span class="ot">&lt;-</span> <span class="fu">qgev</span>(U, <span class="at">loc =</span> <span class="dv">6</span>, <span class="at">scale =</span> <span class="dv">2</span>, <span class="at">shape =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">library</span>(stdmatern)</span>
+<span id="cb7-2"><a href=""></a>dim1 <span class="ot">&lt;-</span> <span class="dv">50</span>; dim2 <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb7-3"><a href=""></a>rho1 <span class="ot">&lt;-</span> <span class="fl">0.9</span>; rho2 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb7-4"><a href=""></a>nu <span class="ot">&lt;-</span> <span class="dv">1</span>; n_obs <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb7-5"><a href=""></a>Z <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_eigen</span>(n_obs, dim1, dim2, rho1, rho2, nu)</span>
+<span id="cb7-6"><a href=""></a>U <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(Z)</span>
+<span id="cb7-7"><a href=""></a>Y <span class="ot">&lt;-</span> <span class="fu">qgev</span>(U, <span class="at">loc =</span> <span class="dv">6</span>, <span class="at">scale =</span> <span class="dv">2</span>, <span class="at">shape =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Log-likelihood</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>log_lik <span class="ot">&lt;-</span> <span class="cf">function</span>(par, Y) {</span>
-<span id="cb7-2"><a href=""></a>  mu <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">1</span>])</span>
-<span id="cb7-3"><a href=""></a>  sigma <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">2</span>] <span class="sc">+</span> par[<span class="dv">1</span>])</span>
-<span id="cb7-4"><a href=""></a>  xi <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">3</span>])</span>
-<span id="cb7-5"><a href=""></a>  rho1 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">4</span>]); rho2 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">5</span>])</span>
-<span id="cb7-6"><a href=""></a>  u <span class="ot">&lt;-</span> evd<span class="sc">::</span><span class="fu">pgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi)</span>
-<span id="cb7-7"><a href=""></a>  z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(u)</span>
-<span id="cb7-8"><a href=""></a>  ll_marg <span class="ot">&lt;-</span> <span class="fu">sum</span>(evd<span class="sc">::</span><span class="fu">dgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi, <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb7-9"><a href=""></a>  ll_copula <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dmatern_copula_eigen</span>(z, dim1, dim2, rho1, rho2, nu))</span>
-<span id="cb7-10"><a href=""></a>  ll_copula <span class="sc">+</span> ll_marg</span>
-<span id="cb7-11"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>log_lik <span class="ot">&lt;-</span> <span class="cf">function</span>(par, Y) {</span>
+<span id="cb8-2"><a href=""></a>  mu <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">1</span>])</span>
+<span id="cb8-3"><a href=""></a>  sigma <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">2</span>] <span class="sc">+</span> par[<span class="dv">1</span>])</span>
+<span id="cb8-4"><a href=""></a>  xi <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">3</span>])</span>
+<span id="cb8-5"><a href=""></a>  rho1 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">4</span>]); rho2 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">5</span>])</span>
+<span id="cb8-6"><a href=""></a>  u <span class="ot">&lt;-</span> evd<span class="sc">::</span><span class="fu">pgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi)</span>
+<span id="cb8-7"><a href=""></a>  z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(u)</span>
+<span id="cb8-8"><a href=""></a>  ll_marg <span class="ot">&lt;-</span> <span class="fu">sum</span>(evd<span class="sc">::</span><span class="fu">dgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi, <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb8-9"><a href=""></a>  ll_copula <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dmatern_copula_eigen</span>(z, dim1, dim2, rho1, rho2, nu))</span>
+<span id="cb8-10"><a href=""></a>  ll_copula <span class="sc">+</span> ll_marg</span>
+<span id="cb8-11"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Optimize</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
-<span id="cb8-2"><a href=""></a>res <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="at">par =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb8-3"><a href=""></a>  log_lik,</span>
-<span id="cb8-4"><a href=""></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>),</span>
-<span id="cb8-5"><a href=""></a>  <span class="at">Y =</span> Y,</span>
-<span id="cb8-6"><a href=""></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb8-7"><a href=""></a>  <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>)</span>
-<span id="cb8-8"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
+<span id="cb9-2"><a href=""></a>res <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="at">par =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb9-3"><a href=""></a>  log_lik,</span>
+<span id="cb9-4"><a href=""></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb9-5"><a href=""></a>  <span class="at">Y =</span> Y,</span>
+<span id="cb9-6"><a href=""></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-7"><a href=""></a>  <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>)</span>
+<span id="cb9-8"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>1.829 sec elapsed</code></pre>
 </div>
@@ -747,8 +753,8 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <p><br> <br></p>
 <p><strong>Results</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">solve</span>(<span class="sc">-</span>res<span class="sc">$</span>hessian)))</span>
-<span id="cb10-2"><a href=""></a>ci <span class="ot">&lt;-</span> res<span class="sc">$</span>par <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>) <span class="sc">*</span> se</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">solve</span>(<span class="sc">-</span>res<span class="sc">$</span>hessian)))</span>
+<span id="cb11-2"><a href=""></a>ci <span class="ot">&lt;-</span> res<span class="sc">$</span>par <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>) <span class="sc">*</span> se</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">

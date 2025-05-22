@@ -290,7 +290,7 @@ set.seed(5)
 ```
 
 ```{r}
-#| echo: false
+#| echo: true
 Q <- make_AR_prec_matrix(dim = 60, rho = 0.9)
 set.seed(2)
 Z <- rmvn.sparse(n = 1, mu = rep(0, nrow(Q)), CH = Cholesky(Q)) |>
