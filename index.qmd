@@ -175,11 +175,11 @@ where $\eta$ is the latent field, $\theta$ are hyperparameters, and $\hat{\eta}$
 ![](images/iid/xi.png){width=100%}
 :::
 ::: {.column width="25%"}
-![](images/iid/gamma.png){width=100%}
+![](images/iid/Delta.png){width=100%}
 :::
 :::
 
-## Where I Came In
+## 
 
 ![](images/jonahjameson.png){fig-align="center"}
 
@@ -407,8 +407,8 @@ tibble(
 #| echo: false
 
 set.seed(5)
-dim1 <- 200
-dim2 <- 100
+dim1 <- 300
+dim2 <- 150
 rho1 <- 0.6
 rho2 <- 0.9
 nu <- 2
@@ -668,7 +668,7 @@ $$
 \boldsymbol \Sigma_{ii} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} (v^T)_{ki} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} v_{ik} = \sum_{k=1}^{n} v_{ik}^2 \frac{1}{\lambda_k}
 $$
 
-Let $\left\{\lambda\right\}_{ij} = \left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j$ and $\left\{\mathbf{v}\right\}_{ij} = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$. Compute vector $\boldsymbol \sigma^2$ containing all marginal variances
+Let $\left\{\lambda\right\}_{ij} = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}$ and $\left\{\mathbf{v}\right\}_{ij} = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$. Compute vector $\boldsymbol \sigma^2$ containing all marginal variances
 
 $$ 
 \boldsymbol \sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2} 
@@ -788,6 +788,53 @@ $$
 
 :::
 
+## 
+
+```{r}
+#| echo: false
+library(gt)
+read_csv("data/benchmark_all.csv") |>
+  gt() |>
+  cols_label(
+    `Cholesky (Unscaled)` = "Cholesky",
+    `Eigen (Unscaled)` = "Time",
+    sp_3 = "Relative",
+    eig = "Eigen",
+    circ = "Time",
+    sp_1 = "Relative",
+    fol = "Time",
+    sp_2 = "Relative"
+  ) |>
+  tab_spanner(
+    label = "Circulant",
+    columns = 6:7
+  ) |>
+  tab_spanner(
+    label = "Folded",
+    columns = 8:9
+  ) |>
+  tab_spanner(
+    label = "Eigen",
+    columns = 3:4
+  ) |>
+  tab_spanner(
+    label = "Unscaled",
+    2:4
+  ) |>
+  tab_spanner(
+    label = "Scaled",
+    columns = 5:9
+  ) |>
+  tab_caption(
+    md("Benchmarking how long it takes to evaluate the density of the Mátern($\\nu$)-like field on a regular grid with correlation parameter $\\rho$, either unscaled or scaled to have unit marginal variance")
+  )
+```
+
+
+##
+
+![](images/friendship_ended.jpg){fig-align="center"}
+
 ## Maximum Likelihood
 
 ::: {.columns style="font-size:45%"}
@@ -898,7 +945,7 @@ tibble(
 :::
 :::
 
-## It only a Hessian
+## 
 
 ![](images/only_a_hessian.png){fig-align="center"}
 

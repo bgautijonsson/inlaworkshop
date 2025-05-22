@@ -363,11 +363,11 @@ p(\eta, \theta \mid \hat{\eta}) \propto p(\hat{\eta} \mid \eta)p(\eta \mid \thet
 </div><div class="column" style="width:25%;">
 <p><img data-src="images/iid/xi.png" style="width:100.0%"></p>
 </div><div class="column" style="width:25%;">
-<p><img data-src="images/iid/gamma.png" style="width:100.0%"></p>
+<p><img data-src="images/iid/Delta.png" style="width:100.0%"></p>
 </div></div>
 </section>
-<section id="where-i-came-in" class="slide level2">
-<h2>Where I Came In</h2>
+<section id="section-2" class="slide level2">
+<h2></h2>
 
 <img data-src="images/jonahjameson.png" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="from-data-level-independence-to-dependence" class="slide level2">
@@ -602,7 +602,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <p><span class="math display">\[
 \boldsymbol \Sigma_{ii} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} (v^T)_{ki} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} v_{ik} = \sum_{k=1}^{n} v_{ik}^2 \frac{1}{\lambda_k}
 \]</span></p>
-<p>Let <span class="math inline">\(\left\{\lambda\right\}_{ij} = \left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\)</span> and <span class="math inline">\(\left\{\mathbf{v}\right\}_{ij} = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\)</span>. Compute vector <span class="math inline">\(\boldsymbol \sigma^2\)</span> containing all marginal variances</p>
+<p>Let <span class="math inline">\(\left\{\lambda\right\}_{ij} = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\)</span> and <span class="math inline">\(\left\{\mathbf{v}\right\}_{ij} = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\)</span>. Compute vector <span class="math inline">\(\boldsymbol \sigma^2\)</span> containing all marginal variances</p>
 <p><span class="math display">\[
 \boldsymbol \sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2}
 \frac{1}{\left\{\lambda\right\}_{ij}}
@@ -709,55 +709,8 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 \]</span></p>
 </div>
 </section>
-<section id="maximum-likelihood" class="slide level2">
-<h2>Maximum Likelihood</h2>
-<div class="columns" style="font-size:45%">
-<div class="column" style="width:60%;">
-<p><strong>Setup</strong></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">library</span>(stdmatern)</span>
-<span id="cb7-2"><a href=""></a>dim1 <span class="ot">&lt;-</span> <span class="dv">50</span>; dim2 <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb7-3"><a href=""></a>rho1 <span class="ot">&lt;-</span> <span class="fl">0.9</span>; rho2 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
-<span id="cb7-4"><a href=""></a>nu <span class="ot">&lt;-</span> <span class="dv">1</span>; n_obs <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb7-5"><a href=""></a>Z <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_eigen</span>(n_obs, dim1, dim2, rho1, rho2, nu)</span>
-<span id="cb7-6"><a href=""></a>U <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(Z)</span>
-<span id="cb7-7"><a href=""></a>Y <span class="ot">&lt;-</span> <span class="fu">qgev</span>(U, <span class="at">loc =</span> <span class="dv">6</span>, <span class="at">scale =</span> <span class="dv">2</span>, <span class="at">shape =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><strong>Log-likelihood</strong></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>log_lik <span class="ot">&lt;-</span> <span class="cf">function</span>(par, Y) {</span>
-<span id="cb8-2"><a href=""></a>  mu <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">1</span>])</span>
-<span id="cb8-3"><a href=""></a>  sigma <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">2</span>] <span class="sc">+</span> par[<span class="dv">1</span>])</span>
-<span id="cb8-4"><a href=""></a>  xi <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">3</span>])</span>
-<span id="cb8-5"><a href=""></a>  rho1 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">4</span>]); rho2 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">5</span>])</span>
-<span id="cb8-6"><a href=""></a>  u <span class="ot">&lt;-</span> evd<span class="sc">::</span><span class="fu">pgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi)</span>
-<span id="cb8-7"><a href=""></a>  z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(u)</span>
-<span id="cb8-8"><a href=""></a>  ll_marg <span class="ot">&lt;-</span> <span class="fu">sum</span>(evd<span class="sc">::</span><span class="fu">dgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi, <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb8-9"><a href=""></a>  ll_copula <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dmatern_copula_eigen</span>(z, dim1, dim2, rho1, rho2, nu))</span>
-<span id="cb8-10"><a href=""></a>  ll_copula <span class="sc">+</span> ll_marg</span>
-<span id="cb8-11"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><strong>Optimize</strong></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
-<span id="cb9-2"><a href=""></a>res <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="at">par =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb9-3"><a href=""></a>  log_lik,</span>
-<span id="cb9-4"><a href=""></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>),</span>
-<span id="cb9-5"><a href=""></a>  <span class="at">Y =</span> Y,</span>
-<span id="cb9-6"><a href=""></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-7"><a href=""></a>  <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>)</span>
-<span id="cb9-8"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>2.001 sec elapsed</code></pre>
-</div>
-</div>
-</div><div class="column" style="width:40%;">
-<p><br> <br></p>
-<p><strong>Results</strong></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">solve</span>(<span class="sc">-</span>res<span class="sc">$</span>hessian)))</span>
-<span id="cb11-2"><a href=""></a>ci <span class="ot">&lt;-</span> res<span class="sc">$</span>par <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>) <span class="sc">*</span> se</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<section id="section-3" class="slide level2">
+<h2></h2>
 <div class="cell">
 <div class="cell-output-display">
 <div id="bkyokyiugw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -787,7 +740,7 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
   font-weight: normal;
   font-style: normal;
   background-color: #FFFFFF;
-  width: 100%;
+  width: auto;
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #A8A8A8;
@@ -1211,6 +1164,697 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 </style>
 
 <table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<caption>Benchmarking how long it takes to evaluate the density of the Mátern(<span class="math inline">\(\nu\)</span>)-like field on a regular grid with correlation parameter <span class="math inline">\(\rho\)</span>, either unscaled or scaled to have unit marginal variance</caption>
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="gt_col_headings gt_spanner_row header">
+<th class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="col"></th>
+<th colspan="3" id="Unscaled" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Unscaled
+</div></th>
+<th colspan="5" id="Scaled" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Scaled
+</div></th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row even">
+<th rowspan="2" id="Grid" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Grid</th>
+<th rowspan="2" id="Cholesky-(Unscaled)" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Cholesky</th>
+<th colspan="2" id="Eigen" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Eigen
+</div></th>
+<th rowspan="2" id="eig" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Eigen</th>
+<th colspan="2" id="Circulant" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Circulant
+</div></th>
+<th colspan="2" id="Folded" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Folded
+</div></th>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Eigen-(Unscaled)" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Time</th>
+<th id="sp_3" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Relative</th>
+<th id="circ" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Time</th>
+<th id="sp_1" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Relative</th>
+<th id="fol" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Time</th>
+<th id="sp_2" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Relative</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Grid">20x20</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">271.13µs</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">179.03µs</td>
+<td class="gt_row gt_right" headers="sp_3">66.0%</td>
+<td class="gt_row gt_left" headers="eig">193.03µs</td>
+<td class="gt_row gt_left" headers="circ">37.64µs</td>
+<td class="gt_row gt_right" headers="sp_1">19.5%</td>
+<td class="gt_row gt_left" headers="fol">118.41µs</td>
+<td class="gt_row gt_right" headers="sp_2">61.3%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Grid">40x40</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">1.72ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">515.88µs</td>
+<td class="gt_row gt_right" headers="sp_3">30.0%</td>
+<td class="gt_row gt_left" headers="eig">751.67µs</td>
+<td class="gt_row gt_left" headers="circ">111.46µs</td>
+<td class="gt_row gt_right" headers="sp_1">14.8%</td>
+<td class="gt_row gt_left" headers="fol">313.08µs</td>
+<td class="gt_row gt_right" headers="sp_2">41.7%</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Grid">60x60</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">6.43ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">1.54ms</td>
+<td class="gt_row gt_right" headers="sp_3">23.9%</td>
+<td class="gt_row gt_left" headers="eig">2.45ms</td>
+<td class="gt_row gt_left" headers="circ">188.21µs</td>
+<td class="gt_row gt_right" headers="sp_1">7.7%</td>
+<td class="gt_row gt_left" headers="fol">582.57µs</td>
+<td class="gt_row gt_right" headers="sp_2">23.8%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Grid">80x80</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">17.82ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">4.11ms</td>
+<td class="gt_row gt_right" headers="sp_3">23.1%</td>
+<td class="gt_row gt_left" headers="eig">6.95ms</td>
+<td class="gt_row gt_left" headers="circ">292.33µs</td>
+<td class="gt_row gt_right" headers="sp_1">4.2%</td>
+<td class="gt_row gt_left" headers="fol">1.11ms</td>
+<td class="gt_row gt_right" headers="sp_2">16.0%</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Grid">100x100</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">38.95ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">9.26ms</td>
+<td class="gt_row gt_right" headers="sp_3">23.8%</td>
+<td class="gt_row gt_left" headers="eig">17.17ms</td>
+<td class="gt_row gt_left" headers="circ">407.66µs</td>
+<td class="gt_row gt_right" headers="sp_1">2.4%</td>
+<td class="gt_row gt_left" headers="fol">1.82ms</td>
+<td class="gt_row gt_right" headers="sp_2">10.6%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Grid">120x120</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">79.89ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">18.11ms</td>
+<td class="gt_row gt_right" headers="sp_3">22.7%</td>
+<td class="gt_row gt_left" headers="eig">33.18ms</td>
+<td class="gt_row gt_left" headers="circ">583.29µs</td>
+<td class="gt_row gt_right" headers="sp_1">1.8%</td>
+<td class="gt_row gt_left" headers="fol">2.52ms</td>
+<td class="gt_row gt_right" headers="sp_2">7.6%</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Grid">140x140</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">140.9ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">30.05ms</td>
+<td class="gt_row gt_right" headers="sp_3">21.3%</td>
+<td class="gt_row gt_left" headers="eig">59.82ms</td>
+<td class="gt_row gt_left" headers="circ">839.21µs</td>
+<td class="gt_row gt_right" headers="sp_1">1.4%</td>
+<td class="gt_row gt_left" headers="fol">4.37ms</td>
+<td class="gt_row gt_right" headers="sp_2">7.3%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Grid">160x160</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">233.35ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">49.4ms</td>
+<td class="gt_row gt_right" headers="sp_3">21.2%</td>
+<td class="gt_row gt_left" headers="eig">90.56ms</td>
+<td class="gt_row gt_left" headers="circ">1.12ms</td>
+<td class="gt_row gt_right" headers="sp_1">1.2%</td>
+<td class="gt_row gt_left" headers="fol">5.22ms</td>
+<td class="gt_row gt_right" headers="sp_2">5.8%</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Grid">180x180</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">357.83ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">74.27ms</td>
+<td class="gt_row gt_right" headers="sp_3">20.8%</td>
+<td class="gt_row gt_left" headers="eig">130.43ms</td>
+<td class="gt_row gt_left" headers="circ">1.44ms</td>
+<td class="gt_row gt_right" headers="sp_1">1.1%</td>
+<td class="gt_row gt_left" headers="fol">7.39ms</td>
+<td class="gt_row gt_right" headers="sp_2">5.7%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Grid">200x200</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">544.79ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">136ms</td>
+<td class="gt_row gt_right" headers="sp_3">25.0%</td>
+<td class="gt_row gt_left" headers="eig">226.08ms</td>
+<td class="gt_row gt_left" headers="circ">1.81ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.8%</td>
+<td class="gt_row gt_left" headers="fol">8.2ms</td>
+<td class="gt_row gt_right" headers="sp_2">3.6%</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Grid">220x220</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">770.21ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">175.32ms</td>
+<td class="gt_row gt_right" headers="sp_3">22.8%</td>
+<td class="gt_row gt_left" headers="eig">314.88ms</td>
+<td class="gt_row gt_left" headers="circ">2.51ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.8%</td>
+<td class="gt_row gt_left" headers="fol">12ms</td>
+<td class="gt_row gt_right" headers="sp_2">3.8%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Grid">240x240</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">1.05s</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">231.95ms</td>
+<td class="gt_row gt_right" headers="sp_3">22.0%</td>
+<td class="gt_row gt_left" headers="eig">439.31ms</td>
+<td class="gt_row gt_left" headers="circ">2.57ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.6%</td>
+<td class="gt_row gt_left" headers="fol">13.79ms</td>
+<td class="gt_row gt_right" headers="sp_2">3.1%</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="section-4" class="slide level2">
+<h2></h2>
+
+<img data-src="images/friendship_ended.jpg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="maximum-likelihood" class="slide level2">
+<h2>Maximum Likelihood</h2>
+<div class="columns" style="font-size:45%">
+<div class="column" style="width:60%;">
+<p><strong>Setup</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">library</span>(stdmatern)</span>
+<span id="cb7-2"><a href=""></a>dim1 <span class="ot">&lt;-</span> <span class="dv">50</span>; dim2 <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb7-3"><a href=""></a>rho1 <span class="ot">&lt;-</span> <span class="fl">0.9</span>; rho2 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb7-4"><a href=""></a>nu <span class="ot">&lt;-</span> <span class="dv">1</span>; n_obs <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb7-5"><a href=""></a>Z <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_eigen</span>(n_obs, dim1, dim2, rho1, rho2, nu)</span>
+<span id="cb7-6"><a href=""></a>U <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(Z)</span>
+<span id="cb7-7"><a href=""></a>Y <span class="ot">&lt;-</span> <span class="fu">qgev</span>(U, <span class="at">loc =</span> <span class="dv">6</span>, <span class="at">scale =</span> <span class="dv">2</span>, <span class="at">shape =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Log-likelihood</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>log_lik <span class="ot">&lt;-</span> <span class="cf">function</span>(par, Y) {</span>
+<span id="cb8-2"><a href=""></a>  mu <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">1</span>])</span>
+<span id="cb8-3"><a href=""></a>  sigma <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">2</span>] <span class="sc">+</span> par[<span class="dv">1</span>])</span>
+<span id="cb8-4"><a href=""></a>  xi <span class="ot">&lt;-</span> <span class="fu">exp</span>(par[<span class="dv">3</span>])</span>
+<span id="cb8-5"><a href=""></a>  rho1 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">4</span>]); rho2 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(par[<span class="dv">5</span>])</span>
+<span id="cb8-6"><a href=""></a>  u <span class="ot">&lt;-</span> evd<span class="sc">::</span><span class="fu">pgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi)</span>
+<span id="cb8-7"><a href=""></a>  z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(u)</span>
+<span id="cb8-8"><a href=""></a>  ll_marg <span class="ot">&lt;-</span> <span class="fu">sum</span>(evd<span class="sc">::</span><span class="fu">dgev</span>(Y, <span class="at">loc =</span> mu, <span class="at">scale =</span> sigma, <span class="at">shape =</span> xi, <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb8-9"><a href=""></a>  ll_copula <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dmatern_copula_eigen</span>(z, dim1, dim2, rho1, rho2, nu))</span>
+<span id="cb8-10"><a href=""></a>  ll_copula <span class="sc">+</span> ll_marg</span>
+<span id="cb8-11"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Optimize</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
+<span id="cb9-2"><a href=""></a>res <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="at">par =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb9-3"><a href=""></a>  log_lik,</span>
+<span id="cb9-4"><a href=""></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb9-5"><a href=""></a>  <span class="at">Y =</span> Y,</span>
+<span id="cb9-6"><a href=""></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-7"><a href=""></a>  <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>)</span>
+<span id="cb9-8"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2.181 sec elapsed</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<p><br> <br></p>
+<p><strong>Results</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">solve</span>(<span class="sc">-</span>res<span class="sc">$</span>hessian)))</span>
+<span id="cb11-2"><a href=""></a>ci <span class="ot">&lt;-</span> res<span class="sc">$</span>par <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>) <span class="sc">*</span> se</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="qzvxmowkvn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qzvxmowkvn table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qzvxmowkvn thead, #qzvxmowkvn tbody, #qzvxmowkvn tfoot, #qzvxmowkvn tr, #qzvxmowkvn td, #qzvxmowkvn th {
+  border-style: none;
+}
+
+#qzvxmowkvn p {
+  margin: 0;
+  padding: 0;
+}
+
+#qzvxmowkvn .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qzvxmowkvn .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qzvxmowkvn .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qzvxmowkvn .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qzvxmowkvn .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qzvxmowkvn .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qzvxmowkvn .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qzvxmowkvn .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qzvxmowkvn .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qzvxmowkvn .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qzvxmowkvn .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qzvxmowkvn .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qzvxmowkvn .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qzvxmowkvn .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qzvxmowkvn .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzvxmowkvn .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qzvxmowkvn .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qzvxmowkvn .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qzvxmowkvn .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzvxmowkvn .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qzvxmowkvn .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzvxmowkvn .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qzvxmowkvn .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzvxmowkvn .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qzvxmowkvn .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzvxmowkvn .gt_left {
+  text-align: left;
+}
+
+#qzvxmowkvn .gt_center {
+  text-align: center;
+}
+
+#qzvxmowkvn .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qzvxmowkvn .gt_font_normal {
+  font-weight: normal;
+}
+
+#qzvxmowkvn .gt_font_bold {
+  font-weight: bold;
+}
+
+#qzvxmowkvn .gt_font_italic {
+  font-style: italic;
+}
+
+#qzvxmowkvn .gt_super {
+  font-size: 65%;
+}
+
+#qzvxmowkvn .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qzvxmowkvn .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qzvxmowkvn .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qzvxmowkvn .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qzvxmowkvn .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qzvxmowkvn .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qzvxmowkvn .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#qzvxmowkvn .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#qzvxmowkvn div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <colgroup>
 <col style="width: 25%">
 <col style="width: 25%">
@@ -1233,33 +1877,33 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <tbody class="gt_table_body">
 <tr class="odd">
 <td class="gt_row gt_left" headers="par"><b>μ<sub></sub></b></td>
-<td class="gt_row gt_right" headers="estimate">6.105</td>
-<td class="gt_row gt_right" headers="lower">5.875</td>
-<td class="gt_row gt_right" headers="upper">6.344</td>
+<td class="gt_row gt_right" headers="estimate">5.960</td>
+<td class="gt_row gt_right" headers="lower">5.744</td>
+<td class="gt_row gt_right" headers="upper">6.184</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left gt_striped" headers="par"><b>σ<sub></sub></b></td>
-<td class="gt_row gt_right gt_striped" headers="estimate">2.077</td>
-<td class="gt_row gt_right gt_striped" headers="lower">1.912</td>
-<td class="gt_row gt_right gt_striped" headers="upper">2.256</td>
+<td class="gt_row gt_right gt_striped" headers="estimate">1.966</td>
+<td class="gt_row gt_right gt_striped" headers="lower">1.814</td>
+<td class="gt_row gt_right gt_striped" headers="upper">2.131</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="par"><b>ξ<sub></sub></b></td>
-<td class="gt_row gt_right" headers="estimate">0.111</td>
-<td class="gt_row gt_right" headers="lower">0.091</td>
-<td class="gt_row gt_right" headers="upper">0.134</td>
+<td class="gt_row gt_right" headers="estimate">0.093</td>
+<td class="gt_row gt_right" headers="lower">0.075</td>
+<td class="gt_row gt_right" headers="upper">0.115</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left gt_striped" headers="par"><b>ρ<sub>1</sub></b></td>
-<td class="gt_row gt_right gt_striped" headers="estimate">0.901</td>
-<td class="gt_row gt_right gt_striped" headers="lower">0.895</td>
-<td class="gt_row gt_right gt_striped" headers="upper">0.906</td>
+<td class="gt_row gt_right gt_striped" headers="estimate">0.898</td>
+<td class="gt_row gt_right gt_striped" headers="lower">0.893</td>
+<td class="gt_row gt_right gt_striped" headers="upper">0.904</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="par"><b>ρ<sub>2</sub></b></td>
-<td class="gt_row gt_right" headers="estimate">0.500</td>
-<td class="gt_row gt_right" headers="lower">0.477</td>
-<td class="gt_row gt_right" headers="upper">0.523</td>
+<td class="gt_row gt_right" headers="estimate">0.498</td>
+<td class="gt_row gt_right" headers="lower">0.475</td>
+<td class="gt_row gt_right" headers="upper">0.521</td>
 </tr>
 </tbody>
 </table>
@@ -1269,8 +1913,8 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 </div>
 </div></div>
 </section>
-<section id="it-only-a-hessian" class="slide level2">
-<h2>It only a Hessian</h2>
+<section id="section-5" class="slide level2">
+<h2></h2>
 
 <img data-src="images/only_a_hessian.png" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="copula-extended-max-and-smooth" class="slide level2" data-name="Copula-Extension">
@@ -1365,39 +2009,39 @@ A Matérn field <span class="math inline">\(x(\mathbf{s})\)</span> in continuous
 <h2>Results</h2>
 
 <img data-src="images/compare/comparison.png" class="r-stretch"></section>
-<section id="section-2" class="slide level2">
-<h2></h2>
-
-<img data-src="images/compare/iid_copula_compare.png" class="r-stretch"></section>
-<section id="section-3" class="slide level2">
-<h2></h2>
-
-<img data-src="images/compare/psi.png" class="r-stretch"></section>
-<section id="section-4" class="slide level2">
-<h2></h2>
-
-<img data-src="images/compare/mu.png" class="r-stretch"></section>
-<section id="section-5" class="slide level2">
-<h2></h2>
-
-<img data-src="images/compare/tau.png" class="r-stretch"></section>
 <section id="section-6" class="slide level2">
 <h2></h2>
 
-<img data-src="images/compare/sigma.png" class="r-stretch"></section>
+<img data-src="images/compare/iid_copula_compare.png" class="r-stretch"></section>
 <section id="section-7" class="slide level2">
 <h2></h2>
 
-<img data-src="images/compare/phi.png" class="r-stretch"></section>
+<img data-src="images/compare/psi.png" class="r-stretch"></section>
 <section id="section-8" class="slide level2">
 <h2></h2>
 
-<img data-src="images/compare/xi.png" class="r-stretch"></section>
+<img data-src="images/compare/mu.png" class="r-stretch"></section>
 <section id="section-9" class="slide level2">
 <h2></h2>
 
-<img data-src="images/compare/gamma.png" class="r-stretch"></section>
+<img data-src="images/compare/tau.png" class="r-stretch"></section>
 <section id="section-10" class="slide level2">
+<h2></h2>
+
+<img data-src="images/compare/sigma.png" class="r-stretch"></section>
+<section id="section-11" class="slide level2">
+<h2></h2>
+
+<img data-src="images/compare/phi.png" class="r-stretch"></section>
+<section id="section-12" class="slide level2">
+<h2></h2>
+
+<img data-src="images/compare/xi.png" class="r-stretch"></section>
+<section id="section-13" class="slide level2">
+<h2></h2>
+
+<img data-src="images/compare/gamma.png" class="r-stretch"></section>
+<section id="section-14" class="slide level2">
 <h2></h2>
 
 <img data-src="images/compare/Delta.png" class="r-stretch"></section>
