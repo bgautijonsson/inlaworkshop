@@ -301,11 +301,11 @@ Brynjólfur Gauti Guðrúnar Jónsson
 </ol>
 </div></div>
 <div style="font-size:65%; margin-top:20px;">
-<p><strong>Posterior</strong>: The joint posterior distribution becomes:</p>
-<p><span class="math display">\[
-p(\eta, \theta \mid \hat{\eta}) \propto p(\hat{\eta} \mid \eta)p(\eta \mid \theta)p(\theta)
-\]</span></p>
-<p>where <span class="math inline">\(\eta\)</span> is the latent field, <span class="math inline">\(\theta\)</span> are hyperparameters, and <span class="math inline">\(\hat{\eta}\)</span> are the local MLEs.</p>
+<p><strong>Conceptually</strong>: MLEs <span class="math inline">\(\hat{\eta}_i\)</span> and precision matrices <span class="math inline">\(\mathbf{Q}_{\eta y,i}\)</span> are sufficient statistics.</p>
+<blockquote>
+<p>“…you can actually gain information by throwing information away…”</p>
+<p>Stephen M. Stigler, The Seven Pillars of Statistical Wisdom</p>
+</blockquote>
 </div>
 </section>
 <section id="computational-implementation" class="slide level2">

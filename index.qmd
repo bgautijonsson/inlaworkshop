@@ -95,13 +95,11 @@ $$
 
 ::: {style="font-size:65%; margin-top:20px;"}
 
-**Posterior**: The joint posterior distribution becomes:
+**Conceptually**: MLEs $\hat{\eta}_i$ and precision matrices $\mathbf{Q}_{\eta y,i}$ are sufficient statistics. 
 
-$$
-p(\eta, \theta \mid \hat{\eta}) \propto p(\hat{\eta} \mid \eta)p(\eta \mid \theta)p(\theta)
-$$
-
-where $\eta$ is the latent field, $\theta$ are hyperparameters, and $\hat{\eta}$ are the local MLEs.
+> “...you can actually gain information by throwing information away...”
+>
+> Stephen M. Stigler, The Seven Pillars of Statistical Wisdom
 :::
 
 
