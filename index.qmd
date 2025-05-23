@@ -38,6 +38,7 @@ library(evd)
 -   UKCP Local Projections on a 5km grid over the UK (1980-2080) [@metoffi]
 -   Challenge: Modeling maximum daily precipitation in yearly blocks
     -   43,920 spatial locations on a 180 x 244 grid
+    -   99 years of projections
     -   Location-specific GEVt distributions
     -   Four parameters per location as in [@johannesson2021]
         -   Location, Trend, Scale, Shape
@@ -58,7 +59,7 @@ library(evd)
   1) *Data:* $y_{i,t} \mid \mu_i, \sigma_i, \xi_i, \Delta_i, x_{i,t} \sim \text{GEV}(\mu_{i,t}, \sigma_i, \xi_i)$ where $\mu_{i,t} = \mu_i \cdot (1 + \Delta_i x_{i,t})$
   2) *Latent field:* $\boldsymbol\eta_i = \begin{pmatrix} (\psi_1, \tau_1, \phi_1, \gamma_1)^\intercal \\  \vdots \\ (\psi_n, \tau_n, \phi_n, \gamma_n)^\intercal \end{pmatrix}  \sim \mathcal{N}(\boldsymbol{\mu}(\theta), \mathbf{Q}^{-1}(\theta))$ 
 
-  $\qquad(\psi_i, \tau_i, \phi_i, \gamma_i) = (\log \mu_i, \log \sigma_i - \log \mu_i, f(\xi_i),  \log \Delta_i)$
+  $\qquad(\psi_i, \tau_i, \phi_i, \gamma_i) = (\log \mu_i, \log \sigma_i - \log \mu_i, f(\xi_i),  \log \Delta_i)$ [@johannesson2021]
   3) *Hyper-parameters:* $\theta =$ e.g. mean, range, variance, spatial correlation
 :::
 

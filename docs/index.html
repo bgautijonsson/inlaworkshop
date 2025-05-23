@@ -238,6 +238,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <li>Challenge: Modeling maximum daily precipitation in yearly blocks
 <ul>
 <li>43,920 spatial locations on a 180 x 244 grid</li>
+<li>99 years of projections</li>
 <li>Location-specific GEVt distributions</li>
 <li>Four parameters per location as in <span class="citation" data-cites="johannesson2021">[<a href="#/references" role="doc-biblioref" onclick="">2</a>]</span>
 <ul>
@@ -263,7 +264,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <li><em>Data:</em> <span class="math inline">\(y_{i,t} \mid \mu_i, \sigma_i, \xi_i, \Delta_i, x_{i,t} \sim \text{GEV}(\mu_{i,t}, \sigma_i, \xi_i)\)</span> where <span class="math inline">\(\mu_{i,t} = \mu_i \cdot (1 + \Delta_i x_{i,t})\)</span></li>
 <li><em>Latent field:</em> <span class="math inline">\(\boldsymbol\eta_i = \begin{pmatrix} (\psi_1, \tau_1, \phi_1, \gamma_1)^\intercal \\  \vdots \\ (\psi_n, \tau_n, \phi_n, \gamma_n)^\intercal \end{pmatrix}  \sim \mathcal{N}(\boldsymbol{\mu}(\theta), \mathbf{Q}^{-1}(\theta))\)</span></li>
 </ol>
-<span class="math inline">\(\qquad(\psi_i, \tau_i, \phi_i, \gamma_i) = (\log \mu_i, \log \sigma_i - \log \mu_i, f(\xi_i),  \log \Delta_i)\)</span>
+<span class="math inline">\(\qquad(\psi_i, \tau_i, \phi_i, \gamma_i) = (\log \mu_i, \log \sigma_i - \log \mu_i, f(\xi_i),  \log \Delta_i)\)</span> <span class="citation" data-cites="johannesson2021">[<a href="#/references" role="doc-biblioref" onclick="">2</a>]</span>
 <ol start="3" type="1">
 <li><em>Hyper-parameters:</em> <span class="math inline">\(\theta =\)</span> e.g.&nbsp;mean, range, variance, spatial correlation</li>
 </ol></li>
